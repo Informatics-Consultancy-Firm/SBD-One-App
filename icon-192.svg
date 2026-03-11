@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="24" fill="#004080"/>
+  <!-- Gold accent bar -->
+  <rect x="0" y="148" width="192" height="8" fill="#C8973A"/>
+  <!-- ICF letters -->
+  <text x="96" y="110" font-family="Arial, sans-serif" font-size="72" font-weight="bold"
+        text-anchor="middle" fill="#ffffff" letter-spacing="-2">ICF</text>
+  <!-- SL tagline -->
+  <text x="96" y="140" font-family="Arial, sans-serif" font-size="22" font-weight="bold"
+        text-anchor="middle" fill="#C8973A" letter-spacing="4">SL</text>
+  <!-- Top gold dot -->
+  <circle cx="96" cy="32" r="12" fill="#C8973A"/>
+</svg>
