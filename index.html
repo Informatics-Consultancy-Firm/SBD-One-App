@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICF-SL Tool Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --navy: #004080; --navy-dark: #002d5a; --navy-light: #0056b3;
+    --gold: #C8973A; --white: #ffffff; --bg: #f0f4f9;
+    --border: #dde6f0; --text: #0a1a2e; --muted: #5a7090;
+  }
+  body { font-family: 'Oswald', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .header { background: var(--navy); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; min-height: 72px; position: relative; overflow: hidden; }
+  .header::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(200,151,58,0.06) 60px,rgba(200,151,58,0.06) 61px); pointer-events: none; }
+  .header-left { display: flex; align-items: center; gap: 18px; }
+  .logo-box { background: #fff; border-radius: 7px; padding: 6px 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-box img { height: 46px; width: auto; border-radius: 4px; display: block; }
+  .header-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
+  .header-title { color: var(--white); font-size: 15px; font-weight: 500; letter-spacing: 0.5px; line-height: 1.2; }
+  .header-title span { display: block; font-size: 11px; font-weight: 300; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+  .header-right { color: rgba(255,255,255,0.5); font-size: 10px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase; text-align: right; }
+
+  /* ── HERO ── */
+  .hero-band { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%); padding: 36px 40px 30px; position: relative; overflow: hidden; }
+  .hero-band::after  { content: ''; position: absolute; right: -60px; top: -60px; width: 280px; height: 280px; border: 2px solid rgba(200,151,58,0.15); border-radius: 50%; pointer-events: none; }
+  .hero-band::before { content: ''; position: absolute; right: -10px; top: -10px; width: 180px; height: 180px; border: 1px solid rgba(200,151,58,0.10); border-radius: 50%; pointer-events: none; }
+  .hero-tag { display: inline-block; background: var(--gold); color: var(--navy-dark); font-size: 9px; font-weight: 700; letter-spacing: 2px; padding: 4px 10px; border-radius: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .hero-band h1 { color: var(--white); font-size: 34px; font-weight: 700; letter-spacing: 1px; line-height: 1.1; margin-bottom: 8px; }
+  .hero-band h1 em { font-style: normal; color: var(--gold); }
+  .hero-band p { color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 300; letter-spacing: 0.8px; max-width: 560px; line-height: 1.7; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; padding: 32px 40px 40px; }
+  .grid-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .grid-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+  .grid-label::before { content: ''; display: block; width: 18px; height: 2px; background: var(--gold); border-radius: 2px; }
+  .count-badge { background: var(--navy); color: var(--white); font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; }
+  .cards-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+
+  /* ── CARD ── */
+  .card { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; display: flex; flex-direction: column; min-height: 200px; animation: cardIn 0.5s ease both; }
+  @keyframes cardIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  .card::before { content: ''; position: absolute; top:0;left:0;right:0; height: 3px; background: linear-gradient(90deg,var(--navy),var(--gold)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,64,128,0.14); border-color: var(--navy); }
+  .card:hover::before { transform: scaleX(1); }
+  .card-top { background: var(--navy); padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .card-top::after { content: ''; position: absolute; right:-20px;bottom:-20px; width:80px;height:80px; border: 1.5px solid rgba(200,151,58,0.15); border-radius: 50%; pointer-events: none; }
+  .card-num { width: 30px; height: 30px; background: var(--gold); color: var(--navy-dark); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; margin-bottom: 12px; flex-shrink: 0; }
+  .card-name { color: var(--white); font-size: 13px; font-weight: 600; letter-spacing: 0.5px; line-height: 1.35; margin-bottom: 8px; text-transform: uppercase; }
+  .card-desc { color: rgba(255,255,255,0.55); font-size: 11px; font-weight: 300; line-height: 1.6; letter-spacing: 0.3px; flex: 1; }
+  .card-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-status { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; }
+  .status-dot.active { background: #28a745; }
+  .card-arrow { width: 28px; height: 28px; border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--navy); }
+  .card:hover .card-arrow { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .card-arrow svg { width: 12px; height: 12px; }
+
+  /* ── FOOTER ── */
+  .page-footer { background: var(--navy); color: rgba(255,255,255,0.5); text-align: center; padding: 18px 40px; font-size: 10px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase; line-height: 1.8; }
+  .page-footer strong { color: var(--gold); font-weight: 600; }
+
+  /* ── MODAL ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,20,50,0.7); backdrop-filter: blur(4px); z-index: 1000; }
+  .modal-overlay.open { display: flex; animation: overlayIn 0.25s ease; }
+  @keyframes overlayIn { from{opacity:0} to{opacity:1} }
+  .modal { width: 100%; height: 100%; background: var(--white); display: flex; flex-direction: column; animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+  @keyframes modalIn { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+  .modal-header { background: var(--navy); padding: 0 30px; display: flex; align-items: center; justify-content: space-between; min-height: 64px; flex-shrink: 0; border-bottom: 2px solid var(--gold); }
+  .modal-title-group { display: flex; align-items: center; gap: 14px; }
+  .modal-num { width: 34px; height: 34px; background: var(--gold); color: var(--navy-dark); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .modal-title-text { color: var(--white); font-size: 16px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .modal-actions { display: flex; align-items: center; gap: 10px; }
+
+  /* Open in new tab button */
+  .btn-new-tab { background: var(--gold); color: var(--navy-dark); border: none; padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Oswald',sans-serif; letter-spacing: 0.5px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+  .btn-new-tab:hover { background: #e0aa4a; transform: scale(1.04); }
+  .btn-new-tab svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+  .btn-close { width: 36px; height: 36px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; color: var(--white); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-family: 'Oswald',sans-serif; }
+  .btn-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
+
+  .modal-tabs { display: flex; background: #f5f8fc; border-bottom: 2px solid var(--border); flex-shrink: 0; }
+  .tab-btn { flex: 1; padding: 14px 20px; border: none; background: transparent; color: var(--muted); font-family: 'Oswald',sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; border-right: 1px solid var(--border); position: relative; }
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn:hover { background: #e8f0fb; color: var(--navy); }
+  .tab-btn.active { background: var(--navy); color: var(--white); }
+  .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left:0; right:0; height: 2px; background: var(--gold); }
+  .tab-icon { font-size: 16px; }
+
+  .modal-body { flex: 1; overflow: hidden; position: relative; }
+  .modal-iframe { width: 100%; height: 100%; border: none; display: none; }
+
+  /* States */
+  .state-loading, .state-placeholder { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; background: #f5f8fc; }
+  .state-loading.visible, .state-placeholder.visible { display: flex; }
+  .spinner { width: 48px; height: 48px; border: 4px solid #dde6f0; border-top-color: var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading-text { color: var(--navy); font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
+  .placeholder-icon  { font-size: 56px; opacity: 0.35; margin-bottom: 16px; }
+  .placeholder-title { color: var(--navy); font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .placeholder-body  { color: var(--muted); font-size: 13px; font-weight: 300; line-height: 1.8; max-width: 400px; }
+  .placeholder-body code { background: #e8f0fb; color: var(--navy); padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
+  /* Responsive */
+  @media(max-width:900px){ .cards-grid{grid-template-columns:repeat(2,1fr)} .main,.hero-band{padding-left:20px;padding-right:20px} .header{padding:0 20px} }
+  @media(max-width:580px){ .cards-grid{grid-template-columns:1fr} .hero-band h1{font-size:26px} .modal-tabs{flex-direction:column} .tab-btn{border-right:none;border-bottom:1px solid var(--border)} .tab-btn:last-child{border-bottom:none} .header-right{display:none} }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo-box">
+      <img src="https://github.com/mohamedsillahkanu/gdp-dashboard-2/raw/6c7463b0d5c3be150aafae695a4bcbbd8aeb1499/ICF-SL.jpg" alt="ICF-SL Logo">
+    </div>
+    <div class="header-divider"></div>
+    <div class="header-title">
+      Informatics Consultancy Firm — Sierra Leone
+      <span>Data-Driven Solutions for Health and Development</span>
+    </div>
+  </div>
+  <div class="header-right">
+    National Malaria Control Programme<br>
+    Ministry of Health · Sierra Leone
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero-band">
+  <div class="hero-tag">Tool Suite</div>
+  <h1>My <em>Tools</em></h1>
+  <p>All tools and data files live in the same folder as this launcher. Click any card to open a tool full-screen — HTML files, CSVs, and all assets load normally.</p>
+</div>
+
+<!-- GRID -->
+<main class="main">
+  <div class="grid-header">
+    <div class="grid-label">Available Tools</div>
+    <div class="count-badge" id="countBadge">6 Tools</div>
+  </div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</main>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <strong>National Malaria Control Programme</strong> · Ministry of Health and Sanitation, Sierra Leone<br>
+  Medical Stores Compound, Freetown · © 2025 Informatics Consultancy Firm-Sierra Leone (ICF-SL)
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-num" id="modalNum">1</div>
+        <div class="modal-title-text" id="modalTitleText">Tool</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-new-tab" id="btnNewTab" onclick="openNewTab()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Open in New Tab
+        </button>
+        <button class="btn-close" onclick="closeModal()">×</button>
+      </div>
+    </div>
+
+    <div class="modal-tabs">
+      <button class="tab-btn active" id="tabConcept"      onclick="switchTab('concept')">
+        <span class="tab-icon">📖</span> Concept
+      </button>
+      <button class="tab-btn"        id="tabIllustration" onclick="switchTab('illustration')">
+        <span class="tab-icon">🎬</span> Illustration
+      </button>
+      <button class="tab-btn"        id="tabTool"         onclick="switchTab('tool')">
+        <span class="tab-icon">🛠️</span> Tool
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="state-loading"          id="stateLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading…</div>
+      </div>
+      <div class="state-placeholder visible" id="statePlaceholder">
+        <div class="placeholder-icon"  id="placeholderIcon">📖</div>
+        <div class="placeholder-title" id="placeholderTitle">Not Configured Yet</div>
+        <div class="placeholder-body"  id="placeholderBody">
+          Add a filename to the matching field in <code>toolData</code>.
+        </div>
+      </div>
+      <iframe class="modal-iframe" id="modalIframe"></iframe>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ====================================================================
+//  TOOL DATA  —  fill in the filenames for each tool
+//
+//  All files (html, csv, js, images…) must be in the SAME FOLDER
+//  as this launcher file.
+//
+//  For each tab just put the filename as a string, e.g.:
+//    tool:         "sbd.html"
+//    concept:      "sbd-concept.html"
+//    illustration: "sbd-illustration.html"
+//
+//  Leave a tab as "" to show the "not configured" placeholder.
+// ====================================================================
+const toolData = [
+  {
+    id:   1,
+    name: "Tool Name One",
+    desc: "Brief description of this tool and its role in the workflow.",
+    concept:      "",   // e.g. "tool1-concept.html"
+    illustration: "",   // e.g. "tool1-illustration.html"
+    tool:         ""    // e.g. "tool1.html"
+  },
+  {
+    id:   2,
+    name: "Tool Name Two",
+    desc: "Brief description of this tool and its role in the workflow.",
+    concept:      "",
+    illustration: "",
+    tool:         ""
+  },
+  {
+    id:   3,
+    name: "Tool Name Three",
+    desc: "Brief description of this tool and its role in the workflow.",
+    concept:      "",
+    illustration: "",
+    tool:         ""
+  },
+  {
+    id:   4,
+    name: "Tool Name Four",
+    desc: "Brief description of this tool and its role in the workflow.",
+    concept:      "",
+    illustration: "",
+    tool:         ""
+  },
+  {
+    id:   5,
+    name: "Tool Name Five",
+    desc: "Brief description of this tool and its role in the workflow.",
+    concept:      "",
+    illustration: "",
+    tool:         ""
+  },
+  {
+    id:   6,
+    name: "Tool Name Six",
+    desc: "Brief description of this tool and its role in the workflow.",
+    concept:      "",
+    illustration: "",
+    tool:         ""
+  }
+];
+
+// ====================================================================
+//  RENDER CARDS
+// ====================================================================
+const arrowSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+const has = v => v && v.trim().length > 0;
+
+document.getElementById('cardsGrid').innerHTML = toolData.map((t, i) => `
+  <div class="card" onclick="openTool(${i})" style="animation-delay:${(i*0.05+0.05).toFixed(2)}s">
+    <div class="card-top">
+      <div class="card-num">${t.id}</div>
+      <div class="card-name">${t.name}</div>
+      <div class="card-desc">${t.desc}</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-status">
+        <div class="status-dot ${has(t.tool) ? 'active' : ''}"></div>
+        ${has(t.tool) ? 'Ready' : 'Placeholder'}
+      </div>
+      <div class="card-arrow">${arrowSVG}</div>
+    </div>
+  </div>`).join('');
+
+// ====================================================================
+//  MODAL STATE
+// ====================================================================
+let activeIdx = null;
+let activeTab = 'concept';
+
+const tabMeta = {
+  concept:      { icon: '📖', title: 'Concept Not Configured',      body: 'Set a filename in <code>toolData[n].concept</code>.'      },
+  illustration: { icon: '🎬', title: 'Illustration Not Configured', body: 'Set a filename in <code>toolData[n].illustration</code>.' },
+  tool:         { icon: '🛠️', title: 'Tool Not Configured',          body: 'Set a filename in <code>toolData[n].tool</code>.'          }
+};
+
+function openTool(idx) {
+  activeIdx = idx;
+  activeTab = 'concept';
+  const t = toolData[idx];
+  document.getElementById('modalNum').textContent       = t.id;
+  document.getElementById('modalTitleText').textContent = t.name.toUpperCase();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tabConcept').classList.add('active');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadTab('concept');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  const f = document.getElementById('modalIframe');
+  f.src = 'about:blank';
+  f.style.display = 'none';
+  activeIdx = null;
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target.id === 'modalOverlay') closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ====================================================================
+//  TAB SWITCHING
+// ====================================================================
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  loadTab(tab);
+}
+
+function loadTab(tab) {
+  const iframe      = document.getElementById('modalIframe');
+  const loading     = document.getElementById('stateLoading');
+  const placeholder = document.getElementById('statePlaceholder');
+  const newTabBtn   = document.getElementById('btnNewTab');
+
+  iframe.style.display = 'none';
+  loading.classList.remove('visible');
+  placeholder.classList.remove('visible');
+  newTabBtn.style.display = 'none';
+  iframe.src = 'about:blank';
+
+  const m = tabMeta[tab];
+  document.getElementById('placeholderIcon').textContent  = m.icon;
+  document.getElementById('placeholderTitle').textContent = m.title;
+  document.getElementById('placeholderBody').innerHTML    = m.body;
+
+  const filename = toolData[activeIdx][tab];
+  if (!has(filename)) { placeholder.classList.add('visible'); return; }
+
+  // Show "Open in New Tab" button
+  newTabBtn.style.display = 'flex';
+  newTabBtn.dataset.href   = filename;
+
+  loading.classList.add('visible');
+
+  iframe.onload = () => {
+    if (iframe.src.endsWith('about:blank')) return;
+    loading.classList.remove('visible');
+    iframe.style.display = 'block';
+  };
+
+  iframe.onerror = () => {
+    loading.classList.remove('visible');
+    document.getElementById('placeholderTitle').textContent = 'File Not Found';
+    document.getElementById('placeholderBody').innerHTML =
+      `Could not load <code>${filename}</code>. Make sure it is in the same folder as this launcher.`;
+    placeholder.classList.add('visible');
+  };
+
+  // Load by filename — file must be in the same folder
+  iframe.src = filename;
+}
+
+function openNewTab() {
+  const filename = toolData[activeIdx][activeTab];
+  if (has(filename)) window.open(filename, '_blank');
+}
+</script>
+</body>
+</html>
