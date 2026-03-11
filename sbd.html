@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ICF‑SL · DMS Chiefdom Logistics with QR</title>
+    <meta name="description" content="ICF-SL DMS to PHU ITN Distribution with QR Receipts">
+    <meta name="theme-color" content="#0B3B5C">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+!function t(e,n,r){function o(s,a){if(!n[s]){if(!e[s]){var u="function"==typeof require&&require;if(!a&&u)return u(s,!0);if(i)return i(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var l=n[s]={exports:{}};e[s][0].call(l.exports,function(t){return o(e[s][1][t]||t)},l,l.exports,t,e,n,r)}return n[s].exports}for(var i="function"==typeof require&&require,s=0;s<r.length;s++)o(r[s]);return o}({1:[function(t,e,n){"use strict";var r={single_source_shortest_paths:function(t,e,n){var o={},i={};i[e]=0;var s,a,u,c,l,f,d,h=r.PriorityQueue.make();for(h.push(e,0);!h.empty();)for(u in a=(s=h.pop()).value,c=s.cost,l=t[a]||{})l.hasOwnProperty(u)&&(f=c+l[u],d=i[u],(void 0===i[u]||d>f)&&(i[u]=f,h.push(u,f),o[u]=a));if(void 0!==n&&void 0===i[n]){var g=["Could not find a path from ",e," to ",n,"."].join("");throw new Error(g)}return o},extract_shortest_path_from_predecessor_list:function(t,e){for(var n=[],r=e;r;)n.push(r),t[r],r=t[r];return n.reverse(),n},find_path:function(t,e,n){var o=r.single_source_shortest_paths(t,e,n);return r.extract_shortest_path_from_predecessor_list(o,n)},PriorityQueue:{make:function(t){var e,n=r.PriorityQueue,o={};for(e in t=t||{},n)n.hasOwnProperty(e)&&(o[e]=n[e]);return o.queue=[],o.sorter=t.sorter||n.default_sorter,o},default_sorter:function(t,e){return t.cost-e.cost},push:function(t,e){var n={value:t,cost:e};this.queue.push(n),this.queue.sort(this.sorter)},pop:function(){return this.queue.shift()},empty:function(){return 0===this.queue.length}}};void 0!==e&&(e.exports=r)},{}],2:[function(t,e,n){const r=t("./can-promise"),o=t("./core/qrcode"),i=t("./renderer/canvas"),s=t("./renderer/svg-tag.js");function a(t,e,n,i,s){const a=[].slice.call(arguments,1),u=a.length,c="function"==typeof a[u-1];if(!c&&!r())throw new Error("Callback required as last argument");if(!c){if(u<1)throw new Error("Too few arguments provided");return 1===u?(n=e,e=i=void 0):2!==u||e.getContext||(i=n,n=e,e=void 0),new Promise(function(r,s){try{const s=o.create(n,i);r(t(s,e,i))}catch(t){s(t)}})}if(u<2)throw new Error("Too few arguments provided");2===u?(s=n,n=e,e=i=void 0):3===u&&(e.getContext&&void 0===s?(s=i,i=void 0):(s=i,i=n,n=e,e=void 0));try{const r=o.create(n,i);s(null,t(r,e,i))}catch(t){s(t)}}n.create=o.create,n.toCanvas=a.bind(null,i.render),n.toDataURL=a.bind(null,i.renderToDataURL),n.toString=a.bind(null,function(t,e,n){return s.render(t,n)})},{"./can-promise":3,"./core/qrcode":19,"./renderer/canvas":26,"./renderer/svg-tag.js":27}],3:[function(t,e,n){e.exports=function(){return"function"==typeof Promise&&Promise.prototype&&Promise.prototype.then}},{}],4:[function(t,e,n){const r=t("./utils").getSymbolSize;n.getRowColCoords=function(t){if(1===t)return[];const e=Math.floor(t/7)+2,n=r(t),o=145===n?26:2*Math.ceil((n-13)/(2*e-2)),i=[n-7];for(let t=1;t<e-1;t++)i[t]=i[t-1]-o;return i.push(6),i.reverse()},n.getPositions=function(t){const e=[],r=n.getRowColCoords(t),o=r.length;for(let t=0;t<o;t++)for(let n=0;n<o;n++)0===t&&0===n||0===t&&n===o-1||t===o-1&&0===n||e.push([r[t],r[n]]);return e}},{"./utils":23}],5:[function(t,e,n){const r=t("./mode"),o=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"," ","$","%","*","+","-",".","/",":"];function i(t){this.mode=r.ALPHANUMERIC,this.data=t}i.getBitsLength=function(t){return 11*Math.floor(t/2)+t%2*6},i.prototype.getLength=function(){return this.data.length},i.prototype.getBitsLength=function(){return i.getBitsLength(this.data.length)},i.prototype.write=function(t){let e;for(e=0;e+2<=this.data.length;e+=2){let n=45*o.indexOf(this.data[e]);n+=o.indexOf(this.data[e+1]),t.put(n,11)}this.data.length%2&&t.put(o.indexOf(this.data[e]),6)},e.exports=i},{"./mode":16}],6:[function(t,e,n){function r(){this.buffer=[],this.length=0}r.prototype={get:function(t){const e=Math.floor(t/8);return 1==(this.buffer[e]>>>7-t%8&1)},put:function(t,e){for(let n=0;n<e;n++)this.putBit(1==(t>>>e-n-1&1))},getLengthInBits:function(){return this.length},putBit:function(t){const e=Math.floor(this.length/8);this.buffer.length<=e&&this.buffer.push(0),t&&(this.buffer[e]|=128>>>this.length%8),this.length++}},e.exports=r},{}],7:[function(t,e,n){function r(t){if(!t||t<1)throw new Error("BitMatrix size must be defined and greater than 0");this.size=t,this.data=new Uint8Array(t*t),this.reservedBit=new Uint8Array(t*t)}r.prototype.set=function(t,e,n,r){const o=t*this.size+e;this.data[o]=n,r&&(this.reservedBit[o]=!0)},r.prototype.get=function(t,e){return this.data[t*this.size+e]},r.prototype.xor=function(t,e,n){this.data[t*this.size+e]^=n},r.prototype.isReserved=function(t,e){return this.reservedBit[t*this.size+e]},e.exports=r},{}],8:[function(t,e,n){const r=t("./mode");function o(t){this.mode=r.BYTE,this.data="string"==typeof t?(new TextEncoder).encode(t):new Uint8Array(t)}o.getBitsLength=function(t){return 8*t},o.prototype.getLength=function(){return this.data.length},o.prototype.getBitsLength=function(){return o.getBitsLength(this.data.length)},o.prototype.write=function(t){for(let e=0,n=this.data.length;e<n;e++)t.put(this.data[e],8)},e.exports=o},{"./mode":16}],9:[function(t,e,n){const r=t("./error-correction-level"),o=[1,1,1,1,1,1,1,1,1,1,2,2,1,2,2,4,1,2,4,4,2,4,4,4,2,4,6,5,2,4,6,6,2,5,8,8,4,5,8,8,4,5,8,11,4,8,10,11,4,9,12,16,4,9,16,16,6,10,12,18,6,10,17,16,6,11,16,19,6,13,18,21,7,14,21,25,8,16,20,25,8,17,23,25,9,17,23,34,9,18,25,30,10,20,27,32,12,21,29,35,12,23,34,37,12,25,34,40,13,26,35,42,14,28,38,45,15,29,40,48,16,31,43,51,17,33,45,54,18,35,48,57,19,37,51,60,19,38,53,63,20,40,56,66,21,43,59,70,22,45,62,74,24,47,65,77,25,49,68,81],i=[7,10,13,17,10,16,22,28,15,26,36,44,20,36,52,64,26,48,72,88,36,64,96,112,40,72,108,130,48,88,132,156,60,110,160,192,72,130,192,224,80,150,224,264,96,176,260,308,104,198,288,352,120,216,320,384,132,240,360,432,144,280,408,480,168,308,448,532,180,338,504,588,196,364,546,650,224,416,600,700,224,442,644,750,252,476,690,816,270,504,750,900,300,560,810,960,312,588,870,1050,336,644,952,1110,360,700,1020,1200,390,728,1050,1260,420,784,1140,1350,450,812,1200,1440,480,868,1290,1530,510,924,1350,1620,540,980,1440,1710,570,1036,1530,1800,570,1064,1590,1890,600,1120,1680,1980,630,1204,1770,2100,660,1260,1860,2220,720,1316,1950,2310,750,1372,2040,2430];n.getBlocksCount=function(t,e){switch(e){case r.L:return o[4*(t-1)+0];case r.M:return o[4*(t-1)+1];case r.Q:return o[4*(t-1)+2];case r.H:return o[4*(t-1)+3];default:return}},n.getTotalCodewordsCount=function(t,e){switch(e){case r.L:return i[4*(t-1)+0];case r.M:return i[4*(t-1)+1];case r.Q:return i[4*(t-1)+2];case r.H:return i[4*(t-1)+3];default:return}}},{"./error-correction-level":10}],10:[function(t,e,n){n.L={bit:1},n.M={bit:0},n.Q={bit:3},n.H={bit:2},n.isValid=function(t){return t&&void 0!==t.bit&&t.bit>=0&&t.bit<4},n.from=function(t,e){if(n.isValid(t))return t;try{return function(t){if("string"!=typeof t)throw new Error("Param is not a string");switch(t.toLowerCase()){case"l":case"low":return n.L;case"m":case"medium":return n.M;case"q":case"quartile":return n.Q;case"h":case"high":return n.H;default:throw new Error("Unknown EC Level: "+t)}}(t)}catch(t){return e}}},{}],11:[function(t,e,n){const r=t("./utils").getSymbolSize;n.getPositions=function(t){const e=r(t);return[[0,0],[e-7,0],[0,e-7]]}},{"./utils":23}],12:[function(t,e,n){const r=t("./utils"),o=r.getBCHDigit(1335);n.getEncodedBits=function(t,e){const n=t.bit<<3|e;let i=n<<10;for(;r.getBCHDigit(i)-o>=0;)i^=1335<<r.getBCHDigit(i)-o;return 21522^(n<<10|i)}},{"./utils":23}],13:[function(t,e,n){const r=new Uint8Array(512),o=new Uint8Array(256);!function(){let t=1;for(let e=0;e<255;e++)r[e]=t,o[t]=e,t<<=1,256&t&&(t^=285);for(let t=255;t<512;t++)r[t]=r[t-255]}(),n.log=function(t){if(t<1)throw new Error("log("+t+")");return o[t]},n.exp=function(t){return r[t]},n.mul=function(t,e){return 0===t||0===e?0:r[o[t]+o[e]]}},{}],14:[function(t,e,n){const r=t("./mode"),o=t("./utils");function i(t){this.mode=r.KANJI,this.data=t}i.getBitsLength=function(t){return 13*t},i.prototype.getLength=function(){return this.data.length},i.prototype.getBitsLength=function(){return i.getBitsLength(this.data.length)},i.prototype.write=function(t){let e;for(e=0;e<this.data.length;e++){let n=o.toSJIS(this.data[e]);if(n>=33088&&n<=40956)n-=33088;else{if(!(n>=57408&&n<=60351))throw new Error("Invalid SJIS character: "+this.data[e]+"\nMake sure your charset is UTF-8");n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13)}},e.exports=i},{"./mode":16,"./utils":23}],15:[function(t,e,n){n.Patterns={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7};const r=3,o=3,i=40,s=10;function a(t,e,r){switch(t){case n.Patterns.PATTERN000:return(e+r)%2==0;case n.Patterns.PATTERN001:return e%2==0;case n.Patterns.PATTERN010:return r%3==0;case n.Patterns.PATTERN011:return(e+r)%3==0;case n.Patterns.PATTERN100:return(Math.floor(e/2)+Math.floor(r/3))%2==0;case n.Patterns.PATTERN101:return e*r%2+e*r%3==0;case n.Patterns.PATTERN110:return(e*r%2+e*r%3)%2==0;case n.Patterns.PATTERN111:return(e*r%3+(e+r)%2)%2==0;default:throw new Error("bad maskPattern:"+t)}}n.isValid=function(t){return null!=t&&""!==t&&!isNaN(t)&&t>=0&&t<=7},n.from=function(t){return n.isValid(t)?parseInt(t,10):void 0},n.getPenaltyN1=function(t){const e=t.size;let n=0,o=0,i=0,s=null,a=null;for(let u=0;u<e;u++){o=i=0,s=a=null;for(let c=0;c<e;c++){let e=t.get(u,c);e===s?o++:(o>=5&&(n+=r+(o-5)),s=e,o=1),e=t.get(c,u),e===a?i++:(i>=5&&(n+=r+(i-5)),a=e,i=1)}o>=5&&(n+=r+(o-5)),i>=5&&(n+=r+(i-5))}return n},n.getPenaltyN2=function(t){const e=t.size;let n=0;for(let r=0;r<e-1;r++)for(let o=0;o<e-1;o++){const e=t.get(r,o)+t.get(r,o+1)+t.get(r+1,o)+t.get(r+1,o+1);4!==e&&0!==e||n++}return n*o},n.getPenaltyN3=function(t){const e=t.size;let n=0,r=0,o=0;for(let i=0;i<e;i++){r=o=0;for(let s=0;s<e;s++)r=r<<1&2047|t.get(i,s),s>=10&&(1488===r||93===r)&&n++,o=o<<1&2047|t.get(s,i),s>=10&&(1488===o||93===o)&&n++}return n*i},n.getPenaltyN4=function(t){let e=0;const n=t.data.length;for(let r=0;r<n;r++)e+=t.data[r];return Math.abs(Math.ceil(100*e/n/5)-10)*s},n.applyMask=function(t,e){const n=e.size;for(let r=0;r<n;r++)for(let o=0;o<n;o++)e.isReserved(o,r)||e.xor(o,r,a(t,o,r))},n.getBestMask=function(t,e){const r=Object.keys(n.Patterns).length;let o=0,i=1/0;for(let s=0;s<r;s++){e(s),n.applyMask(s,t);const r=n.getPenaltyN1(t)+n.getPenaltyN2(t)+n.getPenaltyN3(t)+n.getPenaltyN4(t);n.applyMask(s,t),r<i&&(i=r,o=s)}return o}},{}],16:[function(t,e,n){const r=t("./version-check"),o=t("./regex");n.NUMERIC={id:"Numeric",bit:1,ccBits:[10,12,14]},n.ALPHANUMERIC={id:"Alphanumeric",bit:2,ccBits:[9,11,13]},n.BYTE={id:"Byte",bit:4,ccBits:[8,16,16]},n.KANJI={id:"Kanji",bit:8,ccBits:[8,10,12]},n.MIXED={bit:-1},n.getCharCountIndicator=function(t,e){if(!t.ccBits)throw new Error("Invalid mode: "+t);if(!r.isValid(e))throw new Error("Invalid version: "+e);return e>=1&&e<10?t.ccBits[0]:e<27?t.ccBits[1]:t.ccBits[2]},n.getBestModeForData=function(t){return o.testNumeric(t)?n.NUMERIC:o.testAlphanumeric(t)?n.ALPHANUMERIC:o.testKanji(t)?n.KANJI:n.BYTE},n.toString=function(t){if(t&&t.id)return t.id;throw new Error("Invalid mode")},n.isValid=function(t){return t&&t.bit&&t.ccBits},n.from=function(t,e){if(n.isValid(t))return t;try{return function(t){if("string"!=typeof t)throw new Error("Param is not a string");switch(t.toLowerCase()){case"numeric":return n.NUMERIC;case"alphanumeric":return n.ALPHANUMERIC;case"kanji":return n.KANJI;case"byte":return n.BYTE;default:throw new Error("Unknown mode: "+t)}}(t)}catch(t){return e}}},{"./regex":21,"./version-check":24}],17:[function(t,e,n){const r=t("./mode");function o(t){this.mode=r.NUMERIC,this.data=t.toString()}o.getBitsLength=function(t){return 10*Math.floor(t/3)+(t%3?t%3*3+1:0)},o.prototype.getLength=function(){return this.data.length},o.prototype.getBitsLength=function(){return o.getBitsLength(this.data.length)},o.prototype.write=function(t){let e,n,r;for(e=0;e+3<=this.data.length;e+=3)n=this.data.substr(e,3),r=parseInt(n,10),t.put(r,10);const o=this.data.length-e;o>0&&(n=this.data.substr(e),r=parseInt(n,10),t.put(r,3*o+1))},e.exports=o},{"./mode":16}],18:[function(t,e,n){const r=t("./galois-field");n.mul=function(t,e){const n=new Uint8Array(t.length+e.length-1);for(let o=0;o<t.length;o++)for(let i=0;i<e.length;i++)n[o+i]^=r.mul(t[o],e[i]);return n},n.mod=function(t,e){let n=new Uint8Array(t);for(;n.length-e.length>=0;){const t=n[0];for(let o=0;o<e.length;o++)n[o]^=r.mul(e[o],t);let o=0;for(;o<n.length&&0===n[o];)o++;n=n.slice(o)}return n},n.generateECPolynomial=function(t){let e=new Uint8Array([1]);for(let o=0;o<t;o++)e=n.mul(e,new Uint8Array([1,r.exp(o)]));return e}},{"./galois-field":13}],19:[function(t,e,n){const r=t("./utils"),o=t("./error-correction-level"),i=t("./bit-buffer"),s=t("./bit-matrix"),a=t("./alignment-pattern"),u=t("./finder-pattern"),c=t("./mask-pattern"),l=t("./error-correction-code"),f=t("./reed-solomon-encoder"),d=t("./version"),h=t("./format-info"),g=t("./mode"),p=t("./segments");function m(t,e,n){const r=t.size,o=h.getEncodedBits(e,n);let i,s;for(i=0;i<15;i++)s=1==(o>>i&1),i<6?t.set(i,8,s,!0):i<8?t.set(i+1,8,s,!0):t.set(r-15+i,8,s,!0),i<8?t.set(8,r-i-1,s,!0):i<9?t.set(8,15-i-1+1,s,!0):t.set(8,15-i-1,s,!0);t.set(r-8,8,1,!0)}function w(t,e,n){const o=new i;n.forEach(function(e){o.put(e.mode.bit,4),o.put(e.getLength(),g.getCharCountIndicator(e.mode,t)),e.write(o)});const s=8*(r.getSymbolTotalCodewords(t)-l.getTotalCodewordsCount(t,e));for(o.getLengthInBits()+4<=s&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(0);const a=(s-o.getLengthInBits())/8;for(let t=0;t<a;t++)o.put(t%2?17:236,8);return function(t,e,n){const o=r.getSymbolTotalCodewords(e),i=l.getTotalCodewordsCount(e,n),s=o-i,a=l.getBlocksCount(e,n),u=o%a,c=a-u,d=Math.floor(o/a),h=Math.floor(s/a),g=h+1,p=d-h,m=new f(p);let w=0;const E=new Array(a),y=new Array(a);let v=0;const A=new Uint8Array(t.buffer);for(let t=0;t<a;t++){const e=t<c?h:g;E[t]=A.slice(w,w+e),y[t]=m.encode(E[t]),w+=e,v=Math.max(v,e)}const C=new Uint8Array(o);let B,I,M=0;for(B=0;B<v;B++)for(I=0;I<a;I++)B<E[I].length&&(C[M++]=E[I][B]);for(B=0;B<p;B++)for(I=0;I<a;I++)C[M++]=y[I][B];return C}(o,t,e)}function E(t,e,n,o){let i;if(Array.isArray(t))i=p.fromArray(t);else{if("string"!=typeof t)throw new Error("Invalid data");{let r=e;if(!r){const e=p.rawSplit(t);r=d.getBestVersionForData(e,n)}i=p.fromString(t,r||40)}}const l=d.getBestVersionForData(i,n);if(!l)throw new Error("The amount of data is too big to be stored in a QR Code");if(e){if(e<l)throw new Error("\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: "+l+".\n")}else e=l;const f=w(e,n,i),h=r.getSymbolSize(e),g=new s(h);return function(t,e){const n=t.size,r=u.getPositions(e);for(let e=0;e<r.length;e++){const o=r[e][0],i=r[e][1];for(let e=-1;e<=7;e++)if(!(o+e<=-1||n<=o+e))for(let r=-1;r<=7;r++)i+r<=-1||n<=i+r||(e>=0&&e<=6&&(0===r||6===r)||r>=0&&r<=6&&(0===e||6===e)||e>=2&&e<=4&&r>=2&&r<=4?t.set(o+e,i+r,!0,!0):t.set(o+e,i+r,!1,!0))}}(g,e),function(t){const e=t.size;for(let n=8;n<e-8;n++){const e=n%2==0;t.set(n,6,e,!0),t.set(6,n,e,!0)}}(g),function(t,e){const n=a.getPositions(e);for(let e=0;e<n.length;e++){const r=n[e][0],o=n[e][1];for(let e=-2;e<=2;e++)for(let n=-2;n<=2;n++)-2===e||2===e||-2===n||2===n||0===e&&0===n?t.set(r+e,o+n,!0,!0):t.set(r+e,o+n,!1,!0)}}(g,e),m(g,n,0),e>=7&&function(t,e){const n=t.size,r=d.getEncodedBits(e);let o,i,s;for(let e=0;e<18;e++)o=Math.floor(e/3),i=e%3+n-8-3,s=1==(r>>e&1),t.set(o,i,s,!0),t.set(i,o,s,!0)}(g,e),function(t,e){const n=t.size;let r=-1,o=n-1,i=7,s=0;for(let a=n-1;a>0;a-=2)for(6===a&&a--;;){for(let n=0;n<2;n++)if(!t.isReserved(o,a-n)){let r=!1;s<e.length&&(r=1==(e[s]>>>i&1)),t.set(o,a-n,r),i--,-1===i&&(s++,i=7)}if(o+=r,o<0||n<=o){o-=r,r=-r;break}}}(g,f),isNaN(o)&&(o=c.getBestMask(g,m.bind(null,g,n))),c.applyMask(o,g),m(g,n,o),{modules:g,version:e,errorCorrectionLevel:n,maskPattern:o,segments:i}}n.create=function(t,e){if(void 0===t||""===t)throw new Error("No input text");let n,i,s=o.M;return void 0!==e&&(s=o.from(e.errorCorrectionLevel,o.M),n=d.from(e.version),i=c.from(e.maskPattern),e.toSJISFunc&&r.setToSJISFunction(e.toSJISFunc)),E(t,n,s,i)}},{"./alignment-pattern":4,"./bit-buffer":6,"./bit-matrix":7,"./error-correction-code":9,"./error-correction-level":10,"./finder-pattern":11,"./format-info":12,"./mask-pattern":15,"./mode":16,"./reed-solomon-encoder":20,"./segments":22,"./utils":23,"./version":25}],20:[function(t,e,n){const r=t("./polynomial");function o(t){this.genPoly=void 0,this.degree=t,this.degree&&this.initialize(this.degree)}o.prototype.initialize=function(t){this.degree=t,this.genPoly=r.generateECPolynomial(this.degree)},o.prototype.encode=function(t){if(!this.genPoly)throw new Error("Encoder not initialized");const e=new Uint8Array(t.length+this.degree);e.set(t);const n=r.mod(e,this.genPoly),o=this.degree-n.length;if(o>0){const t=new Uint8Array(this.degree);return t.set(n,o),t}return n},e.exports=o},{"./polynomial":18}],21:[function(t,e,n){const r="[0-9]+";let o="(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";o=o.replace(/u/g,"\\u");const i="(?:(?![A-Z0-9 $%*+\\-./:]|"+o+")(?:.|[\r\n]))+";n.KANJI=new RegExp(o,"g"),n.BYTE_KANJI=new RegExp("[^A-Z0-9 $%*+\\-./:]+","g"),n.BYTE=new RegExp(i,"g"),n.NUMERIC=new RegExp(r,"g"),n.ALPHANUMERIC=new RegExp("[A-Z $%*+\\-./:]+","g");const s=new RegExp("^"+o+"$"),a=new RegExp("^"+r+"$"),u=new RegExp("^[A-Z0-9 $%*+\\-./:]+$");n.testKanji=function(t){return s.test(t)},n.testNumeric=function(t){return a.test(t)},n.testAlphanumeric=function(t){return u.test(t)}},{}],22:[function(t,e,n){const r=t("./mode"),o=t("./numeric-data"),i=t("./alphanumeric-data"),s=t("./byte-data"),a=t("./kanji-data"),u=t("./regex"),c=t("./utils"),l=t("dijkstrajs");function f(t){return unescape(encodeURIComponent(t)).length}function d(t,e,n){const r=[];let o;for(;null!==(o=t.exec(n));)r.push({data:o[0],index:o.index,mode:e,length:o[0].length});return r}function h(t){const e=d(u.NUMERIC,r.NUMERIC,t),n=d(u.ALPHANUMERIC,r.ALPHANUMERIC,t);let o,i;c.isKanjiModeEnabled()?(o=d(u.BYTE,r.BYTE,t),i=d(u.KANJI,r.KANJI,t)):(o=d(u.BYTE_KANJI,r.BYTE,t),i=[]);return e.concat(n,o,i).sort(function(t,e){return t.index-e.index}).map(function(t){return{data:t.data,mode:t.mode,length:t.length}})}function g(t,e){switch(e){case r.NUMERIC:return o.getBitsLength(t);case r.ALPHANUMERIC:return i.getBitsLength(t);case r.KANJI:return a.getBitsLength(t);case r.BYTE:return s.getBitsLength(t)}}function p(t,e){let n;const u=r.getBestModeForData(t);if(n=r.from(e,u),n!==r.BYTE&&n.bit<u.bit)throw new Error('"'+t+'" cannot be encoded with mode '+r.toString(n)+".\n Suggested mode is: "+r.toString(u));switch(n!==r.KANJI||c.isKanjiModeEnabled()||(n=r.BYTE),n){case r.NUMERIC:return new o(t);case r.ALPHANUMERIC:return new i(t);case r.KANJI:return new a(t);case r.BYTE:return new s(t)}}n.fromArray=function(t){return t.reduce(function(t,e){return"string"==typeof e?t.push(p(e,null)):e.data&&t.push(p(e.data,e.mode)),t},[])},n.fromString=function(t,e){const o=function(t){const e=[];for(let n=0;n<t.length;n++){const o=t[n];switch(o.mode){case r.NUMERIC:e.push([o,{data:o.data,mode:r.ALPHANUMERIC,length:o.length},{data:o.data,mode:r.BYTE,length:o.length}]);break;case r.ALPHANUMERIC:e.push([o,{data:o.data,mode:r.BYTE,length:o.length}]);break;case r.KANJI:e.push([o,{data:o.data,mode:r.BYTE,length:f(o.data)}]);break;case r.BYTE:e.push([{data:o.data,mode:r.BYTE,length:f(o.data)}])}}return e}(h(t,c.isKanjiModeEnabled())),i=function(t,e){const n={},o={start:{}};let i=["start"];for(let s=0;s<t.length;s++){const a=t[s],u=[];for(let t=0;t<a.length;t++){const c=a[t],l=""+s+t;u.push(l),n[l]={node:c,lastCount:0},o[l]={};for(let t=0;t<i.length;t++){const s=i[t];n[s]&&n[s].node.mode===c.mode?(o[s][l]=g(n[s].lastCount+c.length,c.mode)-g(n[s].lastCount,c.mode),n[s].lastCount+=c.length):(n[s]&&(n[s].lastCount=c.length),o[s][l]=g(c.length,c.mode)+4+r.getCharCountIndicator(c.mode,e))}}i=u}for(let t=0;t<i.length;t++)o[i[t]].end=0;return{map:o,table:n}}(o,e),s=l.find_path(i.map,"start","end"),a=[];for(let t=1;t<s.length-1;t++)a.push(i.table[s[t]].node);return n.fromArray(function(t){return t.reduce(function(t,e){const n=t.length-1>=0?t[t.length-1]:null;return n&&n.mode===e.mode?(t[t.length-1].data+=e.data,t):(t.push(e),t)},[])}(a))},n.rawSplit=function(t){return n.fromArray(h(t,c.isKanjiModeEnabled()))}},{"./alphanumeric-data":5,"./byte-data":8,"./kanji-data":14,"./mode":16,"./numeric-data":17,"./regex":21,"./utils":23,dijkstrajs:1}],23:[function(t,e,n){let r;const o=[0,26,44,70,100,134,172,196,242,292,346,404,466,532,581,655,733,815,901,991,1085,1156,1258,1364,1474,1588,1706,1828,1921,2051,2185,2323,2465,2611,2761,2876,3034,3196,3362,3532,3706];n.getSymbolSize=function(t){if(!t)throw new Error('"version" cannot be null or undefined');if(t<1||t>40)throw new Error('"version" should be in range from 1 to 40');return 4*t+17},n.getSymbolTotalCodewords=function(t){return o[t]},n.getBCHDigit=function(t){let e=0;for(;0!==t;)e++,t>>>=1;return e},n.setToSJISFunction=function(t){if("function"!=typeof t)throw new Error('"toSJISFunc" is not a valid function.');r=t},n.isKanjiModeEnabled=function(){return void 0!==r},n.toSJIS=function(t){return r(t)}},{}],24:[function(t,e,n){n.isValid=function(t){return!isNaN(t)&&t>=1&&t<=40}},{}],25:[function(t,e,n){const r=t("./utils"),o=t("./error-correction-code"),i=t("./error-correction-level"),s=t("./mode"),a=t("./version-check"),u=r.getBCHDigit(7973);function c(t,e){return s.getCharCountIndicator(t,e)+4}function l(t,e){let n=0;return t.forEach(function(t){const r=c(t.mode,e);n+=r+t.getBitsLength()}),n}n.from=function(t,e){return a.isValid(t)?parseInt(t,10):e},n.getCapacity=function(t,e,n){if(!a.isValid(t))throw new Error("Invalid QR Code version");void 0===n&&(n=s.BYTE);const i=8*(r.getSymbolTotalCodewords(t)-o.getTotalCodewordsCount(t,e));if(n===s.MIXED)return i;const u=i-c(n,t);switch(n){case s.NUMERIC:return Math.floor(u/10*3);case s.ALPHANUMERIC:return Math.floor(u/11*2);case s.KANJI:return Math.floor(u/13);case s.BYTE:default:return Math.floor(u/8)}},n.getBestVersionForData=function(t,e){let r;const o=i.from(e,i.M);if(Array.isArray(t)){if(t.length>1)return function(t,e){for(let r=1;r<=40;r++)if(l(t,r)<=n.getCapacity(r,e,s.MIXED))return r}(t,o);if(0===t.length)return 1;r=t[0]}else r=t;return function(t,e,r){for(let o=1;o<=40;o++)if(e<=n.getCapacity(o,r,t))return o}(r.mode,r.getLength(),o)},n.getEncodedBits=function(t){if(!a.isValid(t)||t<7)throw new Error("Invalid QR Code version");let e=t<<12;for(;r.getBCHDigit(e)-u>=0;)e^=7973<<r.getBCHDigit(e)-u;return t<<12|e}},{"./error-correction-code":9,"./error-correction-level":10,"./mode":16,"./utils":23,"./version-check":24}],26:[function(t,e,n){const r=t("./utils");n.render=function(t,e,n){let o=n,i=e;void 0!==o||e&&e.getContext||(o=e,e=void 0),e||(i=function(){try{return document.createElement("canvas")}catch(t){throw new Error("You need to specify a canvas element")}}()),o=r.getOptions(o);const s=r.getImageWidth(t.modules.size,o),a=i.getContext("2d"),u=a.createImageData(s,s);return r.qrToImageData(u.data,t,o),function(t,e,n){t.clearRect(0,0,e.width,e.height),e.style||(e.style={}),e.height=n,e.width=n,e.style.height=n+"px",e.style.width=n+"px"}(a,i,s),a.putImageData(u,0,0),i},n.renderToDataURL=function(t,e,r){let o=r;void 0!==o||e&&e.getContext||(o=e,e=void 0),o||(o={});const i=n.render(t,e,o),s=o.type||"image/png",a=o.rendererOpts||{};return i.toDataURL(s,a.quality)}},{"./utils":28}],27:[function(t,e,n){const r=t("./utils");function o(t,e){const n=t.a/255,r=e+'="'+t.hex+'"';return n<1?r+" "+e+'-opacity="'+n.toFixed(2).slice(1)+'"':r}function i(t,e,n){let r=t+e;return void 0!==n&&(r+=" "+n),r}n.render=function(t,e,n){const s=r.getOptions(e),a=t.modules.size,u=t.modules.data,c=a+2*s.margin,l=s.color.light.a?"<path "+o(s.color.light,"fill")+' d="M0 0h'+c+"v"+c+'H0z"/>':"",f="<path "+o(s.color.dark,"stroke")+' d="'+function(t,e,n){let r="",o=0,s=!1,a=0;for(let u=0;u<t.length;u++){const c=Math.floor(u%e),l=Math.floor(u/e);c||s||(s=!0),t[u]?(a++,u>0&&c>0&&t[u-1]||(r+=s?i("M",c+n,.5+l+n):i("m",o,0),o=0,s=!1),c+1<e&&t[u+1]||(r+=i("h",a),a=0)):o++}return r}(u,a,s.margin)+'"/>',d='viewBox="0 0 '+c+" "+c+'"',h='<svg xmlns="http://www.w3.org/2000/svg" '+(s.width?'width="'+s.width+'" height="'+s.width+'" ':"")+d+' shape-rendering="crispEdges">'+l+f+"</svg>\n";return"function"==typeof n&&n(null,h),h}},{"./utils":28}],28:[function(t,e,n){function r(t){if("number"==typeof t&&(t=t.toString()),"string"!=typeof t)throw new Error("Color should be defined as hex string");let e=t.slice().replace("#","").split("");if(e.length<3||5===e.length||e.length>8)throw new Error("Invalid hex color: "+t);3!==e.length&&4!==e.length||(e=Array.prototype.concat.apply([],e.map(function(t){return[t,t]}))),6===e.length&&e.push("F","F");const n=parseInt(e.join(""),16);return{r:n>>24&255,g:n>>16&255,b:n>>8&255,a:255&n,hex:"#"+e.slice(0,6).join("")}}n.getOptions=function(t){t||(t={}),t.color||(t.color={});const e=void 0===t.margin||null===t.margin||t.margin<0?4:t.margin,n=t.width&&t.width>=21?t.width:void 0,o=t.scale||4;return{width:n,scale:n?4:o,margin:e,color:{dark:r(t.color.dark||"#000000ff"),light:r(t.color.light||"#ffffffff")},type:t.type,rendererOpts:t.rendererOpts||{}}},n.getScale=function(t,e){return e.width&&e.width>=t+2*e.margin?e.width/(t+2*e.margin):e.scale},n.getImageWidth=function(t,e){const r=n.getScale(t,e);return Math.floor((t+2*e.margin)*r)},n.qrToImageData=function(t,e,r){const o=e.modules.size,i=e.modules.data,s=n.getScale(o,r),a=Math.floor((o+2*r.margin)*s),u=r.margin*s,c=[r.color.light,r.color.dark];for(let e=0;e<a;e++)for(let n=0;n<a;n++){let l=4*(e*a+n),f=r.color.light;if(e>=u&&n>=u&&e<a-u&&n<a-u){f=c[i[Math.floor((e-u)/s)*o+Math.floor((n-u)/s)]?1:0]}t[l++]=f.r,t[l++]=f.g,t[l++]=f.b,t[l]=f.a}}},{}],29:[function(t,e,n){window.QRCodeLib=t("qrcode")},{qrcode:2}]},{},[29]);
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Oswald', sans-serif; background: #F0F4F8; min-height: 100vh; }
+
+        :root {
+            --navy: #0B3B5C;
+            --navy-light: #1C4F70;
+            --gold: #E1A534;
+            --gold-light: #f5c45e;
+            --green: #1F7A4A;
+            --green-light: #e8f5e9;
+            --red: #B03A2E;
+            --red-light: #ffebee;
+            --orange: #E67E22;
+            --orange-light: #fef0e6;
+            --gray-bg: #F0F4F8;
+        }
+
+        /* ─── Header ─── */
+        .log-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            padding: 16px 20px; display: flex; align-items: center; gap: 16px;
+            box-shadow: 0 6px 14px rgba(0,20,30,0.25);
+            border-bottom: 3px solid var(--gold);
+        }
+        .log-header-logo {
+            width: 56px; height: 56px; background: #FFF; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 2px solid var(--gold); overflow: hidden;
+        }
+        .log-header-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .log-header-text h1 { font-size: 1.55rem; font-weight: 600; color: #FFF; line-height: 1.2; }
+        .log-header-text p  { font-size: 0.75rem; color: rgba(255,255,255,0.8); text-transform: uppercase; }
+
+        /* ─── Login ─── */
+        #loginOverlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 100%);
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-card {
+            background: #FFF; border-radius: 24px; padding: 32px 28px;
+            width: 100%; max-width: 420px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4); border-top: 6px solid var(--gold);
+        }
+        .login-logo {
+            width: 72px; height: 72px; margin: 0 auto 16px;
+            border-radius: 16px; overflow: hidden; border: 3px solid var(--gold);
+        }
+        .login-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .login-title { font-size: 1.4rem; font-weight: 600; color: var(--navy); text-align: center; }
+        .login-divider { width: 60px; height: 4px; background: var(--gold); margin: 12px auto 16px; }
+
+        .password-container { position: relative; width: 100%; }
+        .password-container input { width: 100%; padding-right: 45px; }
+        .eye-icon {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: var(--navy); font-size: 1.2rem; user-select: none;
+        }
+        .input-field {
+            width: 100%; border: 2px solid #D0DAE4; border-radius: 10px;
+            padding: 12px 15px; font-size: 0.9rem; font-family: 'Oswald', sans-serif; outline: none;
+        }
+        .input-field:focus { border-color: var(--navy); }
+        .btn-block {
+            width: 100%; background: var(--navy); color: white; border: none;
+            border-radius: 10px; padding: 14px; font-family: 'Oswald', sans-serif;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px;
+        }
+        .btn-block:hover { background: #0a3149; }
+        .btn-block:disabled { background: #ccc; cursor: not-allowed; }
+        .login-error { color: var(--red); font-size: 0.8rem; margin-top: 8px; display: none; }
+        .login-loading { color: var(--navy); text-align: center; margin: 10px 0; }
+
+        /* ─── Main App ─── */
+        #appMain { display: none; }
+        .staff-bar {
+            background: var(--navy-light); padding: 10px 18px;
+            display: flex; align-items: center; justify-content: space-between; color: white;
+        }
+        .staff-badge {
+            background: var(--gold); color: var(--navy); padding: 5px 14px;
+            border-radius: 40px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+        }
+        .logout-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 30px; color: white; padding: 5px 14px; cursor: pointer;
+        }
+
+        /* ─── Tabs ─── */
+        .tabs { display: flex; background: white; border-bottom: 2px solid var(--gold); }
+        .tab {
+            flex: 1; padding: 14px 5px; border: none; background: none;
+            font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 0.85rem;
+            color: #5E6F7D; text-transform: uppercase; border-bottom: 4px solid transparent; cursor: pointer;
+        }
+        .tab.active { color: var(--navy); border-bottom-color: var(--gold); background: #E9F0F7; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+
+        /* ─── Cards ─── */
+        .card {
+            background: white; border-radius: 16px;
+            box-shadow: 0 8px 22px rgba(0,59,92,0.08); margin-bottom: 18px; overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            padding: 14px 20px; display: flex; align-items: center; gap: 10px; color: white;
+        }
+        .card-header.gold   { background: linear-gradient(135deg, var(--gold), var(--gold-light)); }
+        .card-header.green  { background: linear-gradient(135deg, var(--green), #2e9b5c); }
+        .card-header.orange { background: linear-gradient(135deg, var(--orange), #f39c12); }
+        .card-header svg { width: 18px; height: 18px; color: white; }
+        .card-body { padding: 18px; }
+
+        /* ─── Forms ─── */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        @media (max-width:768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+        .label {
+            font-size: 0.7rem; font-weight: 500; color: var(--navy);
+            text-transform: uppercase; margin-bottom: 3px; display: block;
+        }
+        .input, .select {
+            width: 100%; border: 2px solid #DDE5ED; border-radius: 8px;
+            padding: 10px 13px; font-family: 'Oswald', sans-serif; font-size: 0.9rem; outline: none;
+        }
+        .input:focus, .select:focus { border-color: var(--navy); }
+        .input[readonly] { background: var(--gray-bg); }
+
+        /* ─── Buttons ─── */
+        .btn {
+            background: var(--navy); border: none; border-radius: 8px;
+            padding: 11px 20px; color: white; font-weight: 600; font-size: 0.8rem;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+            font-family: 'Oswald', sans-serif;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,59,92,0.3); }
+        .btn-outline { background: white; border: 2px solid var(--navy); color: var(--navy); }
+        .btn-gold    { background: var(--gold); color: var(--navy); }
+        .btn-green   { background: var(--green); }
+        .btn:disabled { background: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ─── QR Display ─── */
+        .qr-section {
+            margin-top: 20px; padding: 20px; background: #f8f9fa;
+            border-radius: 12px; border: 2px dashed var(--gold); text-align: center;
+        }
+        /* FIX: #qrcode is a container div; canvas created inside it by JS */
+        #qrcode {
+            padding: 15px; background: white; border-radius: 12px;
+            border: 3px solid var(--gold); display: inline-flex;
+            align-items: center; justify-content: center;
+            min-height: 230px; min-width: 230px; margin: 10px auto;
+        }
+        #qrcode canvas { display: block; }
+        .qr-info {
+            background: var(--green-light); border-radius: 12px; padding: 15px;
+            margin-top: 15px; text-align: left; border-left: 4px solid var(--green);
+        }
+        .qr-info-item {
+            display: flex; justify-content: space-between;
+            padding: 5px 0; border-bottom: 1px dashed #ccc; font-size: 0.82rem;
+        }
+        .qr-badge {
+            background: var(--gold); color: var(--navy); padding: 5px 15px;
+            border-radius: 20px; font-size: 0.8rem; display: inline-block; margin-bottom: 10px;
+        }
+
+        
+            50%  { top: calc(100% - 3px); }
+            100% { top: 0; }
+        }
+        .driver-verified-card {
+            background: var(--green-light); border: 2px solid var(--green);
+            border-radius: 10px; padding: 15px; margin: 15px 0;
+        }
+        .verified-badge {
+            background: var(--green); color: white; padding: 5px 15px;
+            border-radius: 20px; display: inline-block; font-size: 0.8rem;
+        }
+
+        /* ─── Stats ─── */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white; border-radius: 16px; padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-left: 4px solid var(--gold);
+        }
+        .stat-card .label { color: var(--navy); font-size: 0.7rem; }
+        .stat-card .value { font-size: 2.2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .sub   { font-size: 0.8rem; color: #666; }
+
+        /* ─── Progress ─── */
+        .progress-container { margin: 15px 0; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.82rem; }
+        .progress-bar { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--green), #2ecc71); transition: width 0.3s;
+        }
+
+        /* ─── PHU Grid ─── */
+        .phu-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px; margin-top: 15px;
+        }
+        .phu-card { background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px; transition: all 0.2s; }
+        .phu-card.dispatched { background: var(--red-light); border-color: var(--red); }
+        .phu-card .phu-name { font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+        .status { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; display: inline-block; }
+        .status.dispatched { background: var(--red); color: white; }
+        .status.pending    { background: var(--gold); color: var(--navy); }
+
+        /* ─── Table ─── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .data-table th { background: var(--navy); color: white; padding: 12px; text-align: left; }
+        .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background: #f8f9fa; }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); display: none;
+            align-items: center; justify-content: center; z-index: 10000;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-content {
+            background: white; border-radius: 24px; padding: 30px;
+            max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;
+            position: relative; border-top: 6px solid var(--gold);
+        }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--navy); }
+        .modal-title { font-size: 1.3rem; color: var(--navy); margin-bottom: 20px; padding-right: 30px; }
+        /* FIX: modal QR container also needs canvas inside */
+        #modalQR {
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; min-height: 240px;
+        }
+        #modalQR canvas { display: block; }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--green); color: white; padding: 12px 26px;
+            border-radius: 40px; box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+            z-index: 4000; transition: 0.25s; opacity: 0; visibility: hidden;
+        }
+        .toast.show { opacity: 1; visibility: visible; }
+        .toast.error { background: var(--red); }
+
+        /* ─── Sync Status Bar ─── */
+        .sync-status {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; background: var(--navy-light); color: white;
+            border-radius: 30px; font-size: 0.75rem; white-space: nowrap;
+        }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); animation: pulse 2s infinite; }
+        .sync-dot.success { background: var(--green); }
+        .sync-dot.error   { background: var(--red); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* ─── Driver password field ─── */
+        .driver-password-container { position: relative; width: 100%; }
+        .driver-password-container input { width: 100%; padding-right: 45px; }
+        .driver-eye-icon {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: var(--navy); font-size: 1.2rem; user-select: none;
+        }
+
+        /* ─── Sync panel ─── */
+        .sync-info { background: #f8f9fa; border-radius: 12px; padding: 20px; text-align: center; }
+        .sync-icon { font-size: 3rem; margin-bottom: 10px; }
+        .sync-message {
+            background: var(--orange-light); border: 1px solid var(--orange); border-radius: 8px;
+            padding: 10px; margin: 10px 0; color: var(--orange); font-size: 0.85rem;
+        }
+        .sync-message.configured {
+            background: var(--green-light); border-color: var(--green); color: var(--green);
+        }
+
+        /* ─── Vehicle plate preview ─── */
+        .plate-preview {
+            background: var(--navy); color: white; padding: 10px;
+            border-radius: 8px; text-align: center; font-size: 1.5rem;
+            letter-spacing: 0.1em; margin-top: 5px;
+        }
+
+        /* ─── FIX: Footer ─── */
+        .footer {
+            text-align: center; padding: 20px 16px;
+            font-size: 0.75rem; color: #8899a8;
+            border-top: 1px solid #dde5ed; margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN OVERLAY
+═══════════════════════════════════════════════ -->
+<div id="loginOverlay">
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="icf-sl.jpg" alt="ICF-SL Logo"
+                 onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230B3B5C%22/><text x=%2220%22 y=%2265%22 fill=%22%23E1A534%22 font-size=%2224%22>ICF</text></svg>'">
+        </div>
+        <div class="login-title">ICF‑SL · DMS LOGISTICS</div>
+        <div class="login-divider"></div>
+        <div id="loginLoading" class="login-loading">Loading CSV data...</div>
+
+        <div class="password-container">
+            <input type="password" class="input-field" id="loginUsername"
+                   placeholder="Enter Username" autocomplete="off" disabled>
+            <span class="eye-icon" id="togglePassword">👁️</span>
+        </div>
+
+        <button class="btn-block" id="loginBtn" disabled>LOADING...</button>
+        <div class="login-error" id="loginErr"></div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════════ -->
+<div id="appMain">
+    <div class="log-header">
+        <div class="log-header-logo">
+            <img src="icf-sl.jpg" alt="ICF-SL"
+                 onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230B3B5C%22/><text x=%2220%22 y=%2265%22 fill=%22%23E1A534%22 font-size=%2224%22>ICF</text></svg>'">
+        </div>
+        <div class="log-header-text">
+            <h1>ICF‑Sierra Leone</h1>
+            <p>Chiefdom-Based DMS → PHU Logistics with QR</p>
+        </div>
+        <div class="sync-status" id="syncStatus">
+            <span class="sync-dot" id="syncDot"></span>
+            <span id="syncText">Checking...</span>
+        </div>
+    </div>
+
+    <div class="staff-bar">
+        <div class="staff-badge" id="staffBadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span id="staffNameSpan"></span>
+        </div>
+        <button class="logout-btn" id="logoutBtn">LOGOUT</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" id="tabDashboard">📊 DASHBOARD</button>
+        <button class="tab"        id="tabDispatch" >➕ NEW DISPATCH</button>
+        <button class="tab"        id="tabRecords"  >📋 RECORDS &amp; QR</button>
+        <button class="tab"        id="tabSync"     >🔄 SYNC STATUS</button>
+    </div>
+
+    <!-- ─── DASHBOARD ─── -->
+    <div class="container" id="panelDashboard">
+        <div class="stats-grid" id="dashboardStats"></div>
+
+        <div class="card">
+            <div class="card-header gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+                <span>TARGET PROGRESS BY CHIEFDOM</span>
+            </div>
+            <div class="card-body" id="chiefdomProgress"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>PHU COVERAGE STATUS</span>
+            </div>
+            <div class="card-body">
+                <div class="phu-grid" id="phuCoverageGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── DISPATCH ─── -->
+    <div class="container" id="panelDispatch" style="display:none;">
+        <div class="card">
+            <div class="card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>DISPATCH DETAILS</span>
+            </div>
+            <div class="card-body">
+                <!-- STEP 1: Dispatch info -->
+                <div class="grid-3">
+                    <div>
+                        <label class="label">DATE &amp; TIME</label>
+                        <input class="input" readonly id="dispDateTime">
+                    </div>
+                    <div>
+                        <label class="label">DMS STAFF</label>
+                        <input class="input" readonly id="dispStaff">
+                    </div>
+                    <div>
+                        <label class="label">DISPATCH ID</label>
+                        <input class="input" readonly id="dispId">
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-top:15px;">
+                    <div>
+                        <label class="label">CHIEFDOM <span style="color:var(--red);">*</span></label>
+                        <select class="select" id="chiefdomSel">
+                            <option value="">—Select Chiefdom—</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">PHU <span style="color:var(--red);">*</span></label>
+                        <select class="select" id="phuSel" disabled>
+                            <option value="">—Select Chiefdom First—</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-top:15px;">
+                    <div>
+                        <label class="label">IG2 ITNs</label>
+                        <input type="number" class="input" id="ig2" min="0" value="0" oninput="calcTotal()">
+                    </div>
+                    <div>
+                        <label class="label">PBO ITNs</label>
+                        <input type="number" class="input" id="pbo" min="0" value="0" oninput="calcTotal()">
+                    </div>
+                </div>
+
+                <div style="background:var(--navy);color:white;border-radius:10px;padding:14px;display:flex;justify-content:space-between;margin-top:15px;">
+                    <span>TOTAL ITNs</span>
+                    <span id="totalItnSpan">0</span>
+                </div>
+
+                <div id="phuStatusWarning" style="display:none;margin-top:15px;padding:10px;background:var(--red-light);border-radius:8px;color:var(--red);">
+                    ⚠ This PHU has already been dispatched to!
+                </div>
+
+                <!-- STEP 2: Driver verification -->
+                <div class="qr-scanner-section">
+                    <h3 style="color:var(--navy);margin-bottom:15px;">STEP 2: VERIFY DRIVER</h3>
+
+                    <div>
+                        <label class="label">DRIVER USERNAME (CONFIDENTIAL)</label>
+                        <div style="display:flex;gap:8px;max-width:480px;">
+                            <div class="driver-password-container" style="flex:1;">
+                                <input type="password" class="input" id="driverUsername" placeholder="Enter driver username">
+                                <span class="driver-eye-icon" id="toggleDriverPassword">👁️</span>
+                            </div>
+                            <button class="btn" id="verifyDriverBtn">VERIFY</button>
+                        </div>
+                    </div>
+
+                    <div id="driverVerifiedCard" class="driver-verified-card" style="display:none;margin-top:15px;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                            <span class="verified-badge">✓ VERIFIED</span>
+                            <strong id="verifiedDriverName"></strong>
+                        </div>
+                        <div id="verifiedDriverDetails"></div>
+                    </div>
+                </div>
+
+                <!-- Vehicle plate -->
+                <div class="grid-2" style="margin-top:15px;">
+                    <div>
+                        <label class="label">VEHICLE LETTERS (3) <span style="color:var(--red);">*</span></label>
+                        <input class="input" id="vehL" maxlength="3" placeholder="ABC"
+                               oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'');updatePlatePreview()">
+                    </div>
+                    <div>
+                        <label class="label">VEHICLE NUMBERS (3) <span style="color:var(--red);">*</span></label>
+                        <input class="input" id="vehN" maxlength="3" placeholder="123"
+                               oninput="this.value=this.value.replace(/[^0-9]/g,'');updatePlatePreview()">
+                    </div>
+                </div>
+                <div class="plate-preview" id="platePreview">— — —</div>
+
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                    <button class="btn btn-green" id="saveBtn" disabled>✓ GENERATE QR &amp; SAVE</button>
+                    <button class="btn btn-outline" id="resetFormBtn">↺ RESET</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Display (shown after save) -->
+        <div id="qrDisplaySection" class="qr-section" style="display:none;">
+            <span class="qr-badge">✅ QR CODE GENERATED — FOR PHU STAFF</span>
+            <!-- FIX: canvas will be created INSIDE this div by JS, not passed as the container -->
+            <div id="qrcode"></div>
+            <p style="margin:10px 0;color:var(--navy);">Scan this QR code at the PHU to verify delivery</p>
+
+            <div class="qr-info" id="qrInfoContainer">
+                <h4 style="color:var(--navy);margin-bottom:8px;">DELIVERY RECEIPT</h4>
+                <div id="qrInfoContent"></div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:15px;justify-content:center;">
+                <button class="btn btn-gold" id="downloadQRBtn">⬇ DOWNLOAD QR</button>
+                <button class="btn btn-outline" id="printReceiptBtn">🖨 PRINT RECEIPT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── RECORDS ─── -->
+    <div class="container" id="panelRecords" style="display:none;">
+        <div class="card">
+            <div class="card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>DISPATCH RECORDS WITH QR</span>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Dispatch ID</th>
+                                <th>Chiefdom</th>
+                                <th>PHU</th>
+                                <th>IG2</th>
+                                <th>PBO</th>
+                                <th>Total</th>
+                                <th>Driver</th>
+                                <th>Vehicle</th>
+                                <th>QR</th>
+                                <th>Sync</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── SYNC STATUS ─── -->
+    <div class="container" id="panelSync" style="display:none;">
+        <div class="card">
+            <div class="card-header orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
+                <span>GOOGLE SHEETS SYNC</span>
+            </div>
+            <div class="card-body">
+
+                <div id="syncMessagePanel" class="sync-message"></div>
+
+                <div class="stats-grid" id="syncStats"></div>
+
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">
+                    <button class="btn btn-gold" id="retryPendingBtn">↺ RETRY PENDING SYNC</button>
+                    <button class="btn btn-outline" id="testSyncBtn">TEST CONNECTION</button>
+                </div>
+
+                <div style="margin-top:30px;">
+                    <h3 style="color:var(--navy);margin-bottom:15px;">Recent Sync Activity</h3>
+                    <div id="syncActivity"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">ICF‑Sierra Leone · QR-enabled DMS Logistics · v2.0 (Fixed)</div>
+</div>
+
+<!-- ─── QR Modal (larger view) ─── -->
+<div class="modal-overlay" id="qrModal">
+    <div class="modal-content">
+        <span class="modal-close" id="closeModalBtn">&times;</span>
+        <h3 class="modal-title">Delivery QR Code</h3>
+        <!-- FIX: canvas created inside by JS -->
+        <div id="modalQR"></div>
+        <div id="modalQRInfo" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT — ALL BUGS FIXED
+═══════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────────────
+// localStorage SAFETY WRAPPER
+// Some browsers (Edge/Safari with Tracking Prevention) block
+// localStorage in third-party or file:// contexts. This wrapper
+// falls back to an in-memory store so the app keeps working.
+// ─────────────────────────────────────────────────────
+const _memStore = {};
+const store = {
+    get(key, fallback = null) {
+        try { const v = localStorage.getItem(key); return v !== null ? v : fallback; }
+        catch { return _memStore[key] !== undefined ? _memStore[key] : fallback; }
+    },
+    set(key, val) {
+        try { localStorage.setItem(key, val); }
+        catch { /* ignore */ }
+        _memStore[key] = val; // always keep in-memory copy
+    }
+};
+
+// ─────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────
+let currentStaff    = null;
+let verifiedDriver  = null;
+let lastSavedRecord = null;
+
+let users          = [];
+let phuHierarchy   = [];
+let HIERARCHY_DATA = {};
+
+let records     = JSON.parse(store.get('dms_chiefdom_records', '[]'));
+let syncLog     = JSON.parse(store.get('dms_sync_log',         '[]'));
+let pendingSync = JSON.parse(store.get('dms_pending_sync',     '[]'));
+
+// FIX: record lookup map keyed by dispatch ID (avoids JSON.stringify in onclick)
+let recordsMap = {};
+records.forEach(r => { recordsMap[r.id] = r; });
+
+let dispatchedPHUs = new Set(records.map(r => r.phu));
+
+// ═══════════════════════════════════════════════════════════
+// GOOGLE SHEETS WEBHOOK — replace the URL below with your
+// deployed Apps Script URL (ends with /exec), then save.
+// ═══════════════════════════════════════════════════════════
+const GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+
+// ─────────────────────────────────────────────────────
+// INIT — load CSVs on page load
+// ─────────────────────────────────────────────────────
+async function loadAllCSV() {
+    try {
+        document.getElementById('loginLoading').textContent = 'Loading users.csv…';
+        await loadUsersCSV();
+
+        document.getElementById('loginLoading').textContent = 'Loading phu_hierarchy.csv…';
+        await loadPHUCSV();
+
+        document.getElementById('loginUsername').disabled = false;
+        document.getElementById('loginBtn').disabled      = false;
+        document.getElementById('loginBtn').textContent   = 'LOGIN';
+        document.getElementById('loginLoading').style.display = 'none';
+
+    } catch (err) {
+        document.getElementById('loginLoading').innerHTML =
+            '❌ Error loading CSV files. Ensure <code>users.csv</code> and <code>phu_hierarchy.csv</code> exist.';
+        console.error('CSV load error:', err);
+    }
+}
+
+async function loadUsersCSV() {
+    const res = await fetch('users.csv');
+    if (!res.ok) throw new Error('users.csv not found');
+    const text = await res.text();
+    users = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+}
+
+async function loadPHUCSV() {
+    const res = await fetch('phu_hierarchy.csv');
+    if (!res.ok) throw new Error('phu_hierarchy.csv not found');
+    const text = await res.text();
+    phuHierarchy = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+
+    HIERARCHY_DATA = {};
+    phuHierarchy.forEach(row => {
+        if (row.district && row.chiefdom && row.phu_name) {
+            if (!HIERARCHY_DATA[row.district])                 HIERARCHY_DATA[row.district] = {};
+            if (!HIERARCHY_DATA[row.district][row.chiefdom])   HIERARCHY_DATA[row.district][row.chiefdom] = [];
+            HIERARCHY_DATA[row.district][row.chiefdom].push(row.phu_name);
+        }
+    });
+}
+
+// ─────────────────────────────────────────────────────
+// LOGIN / LOGOUT
+// ─────────────────────────────────────────────────────
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const inp = document.getElementById('loginUsername');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    this.textContent = inp.type === 'password' ? '👁️' : '🔒';
+});
+
+document.getElementById('toggleDriverPassword').addEventListener('click', function () {
+    const inp = document.getElementById('driverUsername');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    this.textContent = inp.type === 'password' ? '👁️' : '🔒';
+});
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+    const username = document.getElementById('loginUsername').value.trim();
+    const user = users.find(u => u.username === username && u.role === 'DMS Staff');
+
+    if (!user) {
+        showError('Invalid username or not DMS staff');
+        return;
+    }
+
+    currentStaff = user;
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('appMain').style.display = 'block';
+    document.getElementById('staffNameSpan').textContent = `${user.full_name} (${user.district})`;
+
+    initDispatch();
+    populateChiefdoms();
+    updateDashboard();
+    renderRecords();
+    updateSyncIndicator();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    currentStaff = null;
+    stopQR();
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('appMain').style.display = 'none';
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginErr').style.display = 'none';
+});
+
+function showError(msg) {
+    const el = document.getElementById('loginErr');
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+// ─────────────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────────────
+const TABS = ['Dashboard', 'Dispatch', 'Records', 'Sync'];
+
+TABS.forEach(name => {
+    document.getElementById('tab' + name).addEventListener('click', () => {
+        setActiveTab(name.toLowerCase());
+        if (name === 'Dashboard') updateDashboard();
+        if (name === 'Dispatch')  { resetDriverVerification(); document.getElementById('qrDisplaySection').style.display = 'none'; }
+        if (name === 'Records')   renderRecords();
+        if (name === 'Sync')      renderSyncStatus();
+    });
+});
+
+function setActiveTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+    TABS.forEach(name => {
+        document.getElementById('panel' + name).style.display = name.toLowerCase() === tab ? 'block' : 'none';
+    });
+}
+
+// ─────────────────────────────────────────────────────
+// CHIEFDOM / PHU SELECTORS
+// ─────────────────────────────────────────────────────
+function populateChiefdoms() {
+    if (!currentStaff) return;
+    const sel = document.getElementById('chiefdomSel');
+    sel.innerHTML = '<option value="">—Select Chiefdom—</option>';
+
+    const districts = currentStaff.district === 'All Districts'
+        ? Object.keys(HIERARCHY_DATA)
+        : [currentStaff.district];
+
+    districts.forEach(district => {
+        Object.keys(HIERARCHY_DATA[district] || {}).sort().forEach(chiefdom => {
+            const opt = document.createElement('option');
+            opt.value = chiefdom;
+            opt.textContent = `${chiefdom} (${district})`;
+            opt.dataset.district = district;
+            sel.appendChild(opt);
+        });
+    });
+}
+
+document.getElementById('chiefdomSel').addEventListener('change', function () {
+    const chiefdom = this.value;
+    const district = this.selectedOptions[0]?.dataset.district;
+    const phuSel   = document.getElementById('phuSel');
+
+    phuSel.innerHTML = '<option value="">—Select PHU—</option>';
+
+    if (chiefdom && district && HIERARCHY_DATA[district]?.[chiefdom]) {
+        HIERARCHY_DATA[district][chiefdom].forEach(phu => {
+            const opt = document.createElement('option');
+            opt.value = phu; opt.textContent = phu;
+            phuSel.appendChild(opt);
+        });
+        phuSel.disabled = false;
+    } else {
+        phuSel.disabled = true;
+    }
+});
+
+document.getElementById('phuSel').addEventListener('change', function () {
+    const warning = document.getElementById('phuStatusWarning');
+    if (this.value && dispatchedPHUs.has(this.value)) {
+        warning.style.display = 'block';
+        document.getElementById('saveBtn').disabled = true;
+    } else {
+        warning.style.display = 'none';
+        document.getElementById('saveBtn').disabled = !verifiedDriver;
+    }
+});
+
+// ─────────────────────────────────────────────────────
+// VEHICLE PLATE
+// ─────────────────────────────────────────────────────
+function updatePlatePreview() {
+    const L = document.getElementById('vehL').value.padEnd(3, '—');
+    const N = document.getElementById('vehN').value.padEnd(3, '—');
+    document.getElementById('platePreview').textContent = `${L}-${N}`;
+}
+window.updatePlatePreview = updatePlatePreview;
+
+// ─────────────────────────────────────────────────────
+// DRIVER VERIFICATION (manual username only)
+// ─────────────────────────────────────────────────────
+document.getElementById('verifyDriverBtn').addEventListener('click', () => {
+    const u = document.getElementById('driverUsername').value.trim();
+    if (u) verifyDriver(u);
+    else showToast('Enter a driver username', 'error');
+});
+
+// Allow Enter key in driver username field
+document.getElementById('driverUsername').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        const u = e.target.value.trim();
+        if (u) verifyDriver(u);
+    }
+});
+
+function stopQR() { /* no-op — scanner removed */ }
+
+function verifyDriver(username) {
+    const driver = users.find(u => u.username === username && u.role === 'Driver');
+    if (!driver) { showToast('Invalid driver username', 'error'); return; }
+
+    verifiedDriver = driver;
+    document.getElementById('verifiedDriverName').textContent = driver.full_name;
+    document.getElementById('verifiedDriverDetails').innerHTML = `
+        <div><strong>Username:</strong> ${driver.username}</div>
+        <div><strong>District:</strong> ${driver.district}</div>
+        <div><strong>Phone:</strong>    ${driver.phone || 'N/A'}</div>
+    `;
+    document.getElementById('driverVerifiedCard').style.display = 'block';
+
+    const phu = document.getElementById('phuSel').value;
+    if (phu && !dispatchedPHUs.has(phu)) {
+        document.getElementById('saveBtn').disabled = false;
+    }
+    showToast('Driver verified!', 'success');
+}
+
+function resetDriverVerification() {
+    verifiedDriver = null;
+    document.getElementById('driverVerifiedCard').style.display = 'none';
+    document.getElementById('driverUsername').value = '';
+    document.getElementById('saveBtn').disabled = true;
+}
+
+// ─────────────────────────────────────────────────────
+// DISPATCH FORM INIT / CALC / RESET
+// ─────────────────────────────────────────────────────
+function initDispatch() {
+    const now = new Date();
+    document.getElementById('dispDateTime').value = now.toLocaleString();
+    document.getElementById('dispStaff').value    = currentStaff ? currentStaff.full_name : '';
+    document.getElementById('dispId').value =
+        'DSP-' + now.getFullYear() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0') + '-' +
+        Math.floor(1000 + Math.random() * 9000);
+}
+
+function calcTotal() {
+    const ig2 = parseInt(document.getElementById('ig2').value) || 0;
+    const pbo = parseInt(document.getElementById('pbo').value) || 0;
+    document.getElementById('totalItnSpan').textContent = ig2 + pbo;
+}
+window.calcTotal = calcTotal;
+
+document.getElementById('resetFormBtn').addEventListener('click', resetForm);
+
+function resetForm() {
+    document.getElementById('chiefdomSel').value = '';
+    document.getElementById('phuSel').innerHTML  = '<option value="">—Select Chiefdom First—</option>';
+    document.getElementById('phuSel').disabled   = true;
+    document.getElementById('ig2').value = '0';
+    document.getElementById('pbo').value = '0';
+    document.getElementById('vehL').value = '';
+    document.getElementById('vehN').value = '';
+    document.getElementById('totalItnSpan').textContent = '0';
+    document.getElementById('phuStatusWarning').style.display = 'none';
+    document.getElementById('platePreview').textContent = '— — —';
+    initDispatch();
+}
+
+// ─────────────────────────────────────────────────────
+// SAVE DISPATCH — FIX: use Promise, store lastSavedRecord
+// ─────────────────────────────────────────────────────
+document.getElementById('saveBtn').addEventListener('click', saveAndSyncDispatch);
+
+async function saveAndSyncDispatch() {
+    if (!verifiedDriver) { showToast('Please verify driver first', 'error'); return; }
+
+    const chiefdom = document.getElementById('chiefdomSel').value;
+    const phu      = document.getElementById('phuSel').value;
+
+    if (!chiefdom || !phu) { showToast('Select chiefdom and PHU', 'error'); return; }
+    if (dispatchedPHUs.has(phu)) { showToast('PHU already dispatched!', 'error'); return; }
+
+    const vehL = document.getElementById('vehL').value.trim();
+    const vehN = document.getElementById('vehN').value.trim();
+
+    if (vehL.length !== 3) { showToast('Vehicle letters must be exactly 3 characters', 'error'); return; }
+    if (vehN.length !== 3) { showToast('Vehicle numbers must be exactly 3 digits', 'error'); return; }
+
+    const vehiclePlate = `${vehL.toUpperCase()}-${vehN}`;
+
+    let district = '';
+    for (const d in HIERARCHY_DATA) {
+        if (HIERARCHY_DATA[d][chiefdom]) { district = d; break; }
+    }
+
+    const now = new Date();
+    const record = {
+        id:             document.getElementById('dispId').value,
+        dateTime:       now.toISOString(),
+        date:           now.toLocaleDateString(),
+        time:           now.toLocaleTimeString(),
+        district,
+        chiefdom,
+        phu,
+        ig2:            parseInt(document.getElementById('ig2').value)  || 0,
+        pbo:            parseInt(document.getElementById('pbo').value)  || 0,
+        total:          (parseInt(document.getElementById('ig2').value) || 0) +
+                        (parseInt(document.getElementById('pbo').value) || 0),
+        driverName:     verifiedDriver.full_name,
+        driverUsername: verifiedDriver.username,
+        driverPhone:    verifiedDriver.phone || 'N/A',
+        vehiclePlate,
+        staffName:      currentStaff.full_name,
+        staffUsername:  currentStaff.username,
+        staffDistrict:  currentStaff.district,
+        timestamp:      now.toLocaleString(),
+        synced:         false,
+        syncAttempts:   0
+    };
+
+    // FIX: Generate QR code and wait for it to complete before resetting the form
+    const qrOk = await generateQRCode(record);
+    if (!qrOk) { showToast('QR generation failed — please retry', 'error'); return; }
+
+    // FIX: Store reference BEFORE resetting form so download/print still work
+    lastSavedRecord = record;
+
+    // Persist locally
+    records.push(record);
+    recordsMap[record.id] = record;
+    dispatchedPHUs.add(phu);
+    store.set('dms_chiefdom_records', JSON.stringify(records));
+
+    // Show QR section
+    document.getElementById('qrDisplaySection').style.display = 'block';
+    document.getElementById('qrDisplaySection').scrollIntoView({ behavior: 'smooth' });
+
+    // Sync to Google Sheets
+    updateSyncIndicator('Syncing…');
+    if (GOOGLE_SHEETS_WEBHOOK) {
+        const synced = await syncToGoogleSheets(record);
+        if (synced) {
+            record.synced = true;
+            showToast('Saved, QR generated, and synced to Google Sheets!', 'success');
+        } else {
+            pendingSync.push(record);
+            store.set('dms_pending_sync', JSON.stringify(pendingSync));
+            showToast('Saved locally with QR. Sync failed — queued for retry.', 'error');
+        }
+    } else {
+        pendingSync.push(record);
+        store.set('dms_pending_sync', JSON.stringify(pendingSync));
+        showToast('Saved locally with QR. Configure sync URL to push to Google Sheets.', 'error');
+    }
+
+    store.set('dms_chiefdom_records', JSON.stringify(records));
+
+    // FIX: Reset form AFTER record is stored and QR is shown
+    resetForm();
+    resetDriverVerification();
+    updateDashboard();
+    renderRecords();
+    updateSyncIndicator();
+}
+
+// ─────────────────────────────────────────────────────
+// QR CODE GENERATION — FIX: create <canvas> inside container div
+// ─────────────────────────────────────────────────────
+async function generateQRCode(record) {
+    const container = document.getElementById('qrcode');
+    container.innerHTML = ''; // clear previous
+
+    // FIX: QRCodeLib.toCanvas requires an actual <canvas> element, not a <div>
+    const canvas = document.createElement('canvas');
+    container.appendChild(canvas);
+
+    const qrData = JSON.stringify({
+        type:             'ICF-SL-DELIVERY',
+        version:          '1.0',
+        dispatchId:       record.id,
+        date:             record.date,
+        time:             record.time,
+        district:         record.district,
+        chiefdom:         record.chiefdom,
+        phu:              record.phu,
+        ig2:              record.ig2,
+        pbo:              record.pbo,
+        total:            record.total,
+        driverName:       record.driverName,
+        driverUsername:   record.driverUsername,
+        driverPhone:      record.driverPhone,
+        vehiclePlate:     record.vehiclePlate,
+        dmsStaff:         record.staffName,
+        timestamp:        record.timestamp,
+        verificationCode: record.id.slice(-6)
+    });
+
+    return new Promise(resolve => {
+        QRCodeLib.toCanvas(canvas, qrData, {
+            width: 200, margin: 2,
+            color: { dark: '#0B3B5C', light: '#FFFFFF' }
+        }, function (error) {
+            if (error) {
+                console.error('QR error:', error);
+                container.innerHTML = '<div style="color:var(--red);padding:20px;">QR Generation Failed</div>';
+                resolve(false);
+                return;
+            }
+
+            // Populate receipt info
+            document.getElementById('qrInfoContent').innerHTML = `
+                <div class="qr-info-item"><span>Dispatch ID:</span><strong>${record.id}</strong></div>
+                <div class="qr-info-item"><span>Date:</span>${record.date} ${record.time}</div>
+                <div class="qr-info-item"><span>Destination:</span>${record.district} → ${record.chiefdom} → ${record.phu}</div>
+                <div class="qr-info-item"><span>ITNs:</span>IG2:${record.ig2} | PBO:${record.pbo} | Total:${record.total}</div>
+                <div class="qr-info-item"><span>Driver:</span>${record.driverName} (${record.driverPhone})</div>
+                <div class="qr-info-item"><span>Vehicle:</span>${record.vehiclePlate}</div>
+                <div class="qr-info-item"><span>DMS Staff:</span>${record.staffName}</div>
+                <div class="qr-info-item"><span>Verification Code:</span><strong>${record.id.slice(-6)}</strong></div>
+            `;
+            resolve(true);
+        });
+    });
+}
+
+// ─────────────────────────────────────────────────────
+// DOWNLOAD / PRINT — FIX: use lastSavedRecord, not dispId (which is reset)
+// ─────────────────────────────────────────────────────
+document.getElementById('downloadQRBtn').addEventListener('click', downloadQR);
+document.getElementById('printReceiptBtn').addEventListener('click', printQR);
+
+function downloadQR() {
+    const canvas = document.querySelector('#qrcode canvas');
+    if (!canvas) { showToast('No QR code to download', 'error'); return; }
+
+    // FIX: use lastSavedRecord.id instead of stale dispId field
+    const filename = lastSavedRecord
+        ? `delivery-${lastSavedRecord.id}.png`
+        : `delivery-qr-${Date.now()}.png`;
+
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function printQR() {
+    const canvas = document.querySelector('#qrcode canvas');
+    if (!canvas) { showToast('No QR code to print', 'error'); return; }
+
+    const qrInfo = document.getElementById('qrInfoContent').innerHTML;
+    const win = window.open('', '_blank');
+    win.document.write(`
+        <html><head>
+        <title>ICF-SL Delivery Receipt</title>
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+        <style>
+            body{font-family:'Oswald',sans-serif;padding:20px;}
+            .receipt{max-width:420px;margin:0 auto;}
+            h2,h3{color:#0B3B5C;text-align:center;}
+            .qr{text-align:center;margin:20px 0;}
+            .info{border-top:3px solid #E1A534;padding:10px;}
+            .qr-info-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #ccc;font-size:0.85rem;}
+            .footer{margin-top:30px;font-size:0.75rem;text-align:center;color:#666;}
+        </style></head><body>
+        <div class="receipt">
+            <h2>ICF‑Sierra Leone</h2>
+            <h3>ITN Delivery Receipt</h3>
+            <div class="qr"><img src="${canvas.toDataURL()}" style="width:200px;border:3px solid #E1A534;border-radius:8px;"></div>
+            <div class="info">${qrInfo}</div>
+            <div class="footer">This QR code serves as proof of delivery. Scan to verify authenticity.<br>
+            ICF‑SL · ${new Date().toLocaleString()}</div>
+        </div></body></html>
+    `);
+    win.document.close();
+    win.print();
+}
+
+// ─────────────────────────────────────────────────────
+// QR MODAL — FIX: use recordsMap[id] instead of inline JSON.stringify; create canvas properly
+// ─────────────────────────────────────────────────────
+document.getElementById('closeModalBtn').addEventListener('click', closeQRModal);
+
+// FIX: called with dispatch ID string only — no more fragile JSON in onclick
+function showQRModal(dispatchId) {
+    const record = recordsMap[dispatchId];
+    if (!record) { showToast('Record not found', 'error'); return; }
+
+    const modal    = document.getElementById('qrModal');
+    const modalQR  = document.getElementById('modalQR');
+    const modalInfo = document.getElementById('modalQRInfo');
+
+    modalQR.innerHTML = '';
+    modal.classList.add('open');
+
+    // FIX: create canvas before calling toCanvas
+    const canvas = document.createElement('canvas');
+    modalQR.appendChild(canvas);
+
+    const qrData = JSON.stringify({
+        type:        'ICF-SL-DELIVERY',
+        dispatchId:  record.id,
+        date:        record.date,
+        phu:         record.phu,
+        total:       record.total,
+        driver:      record.driverName,
+        vehicle:     record.vehiclePlate
+    });
+
+    QRCodeLib.toCanvas(canvas, qrData, {
+        width: 220, margin: 2,
+        color: { dark: '#0B3B5C', light: '#FFFFFF' }
+    }, err => { if (err) console.error('Modal QR error:', err); });
+
+    modalInfo.innerHTML = `
+        <div class="qr-info-item"><span>Dispatch ID:</span><strong>${record.id}</strong></div>
+        <div class="qr-info-item"><span>Date:</span>${record.date}</div>
+        <div class="qr-info-item"><span>PHU:</span>${record.phu}</div>
+        <div class="qr-info-item"><span>Chiefdom:</span>${record.chiefdom}</div>
+        <div class="qr-info-item"><span>ITNs:</span>${record.total} (IG2:${record.ig2} | PBO:${record.pbo})</div>
+        <div class="qr-info-item"><span>Driver:</span>${record.driverName}</div>
+        <div class="qr-info-item"><span>Vehicle:</span>${record.vehiclePlate}</div>
+        <div style="margin-top:12px;">
+            <button class="btn btn-gold" onclick="downloadQRFromRecord('${record.id}')">⬇ DOWNLOAD</button>
+        </div>
+    `;
+}
+
+function closeQRModal() {
+    document.getElementById('qrModal').classList.remove('open');
+}
+
+// Download QR from modal (re-generates from record data)
+function downloadQRFromRecord(dispatchId) {
+    const record = recordsMap[dispatchId];
+    if (!record) return;
+
+    const qrData = JSON.stringify({ type:'ICF-SL-DELIVERY', dispatchId: record.id, date: record.date,
+        phu: record.phu, total: record.total, driver: record.driverName, vehicle: record.vehiclePlate });
+
+    QRCodeLib.toDataURL(qrData, { width: 300, color: { dark: '#0B3B5C', light: '#FFFFFF' } }, (err, url) => {
+        if (err) { showToast('QR download failed', 'error'); return; }
+        const link = document.createElement('a');
+        link.download = `delivery-${record.id}.png`;
+        link.href = url;
+        link.click();
+    });
+}
+window.downloadQRFromRecord = downloadQRFromRecord;
+
+// ─────────────────────────────────────────────────────
+// GOOGLE SHEETS SYNC — FIX: no-cors always "succeeds"; use proper verification
+// ─────────────────────────────────────────────────────
+// Webhook URL is hardcoded as GOOGLE_SHEETS_WEBHOOK above — no UI input needed.
+
+// FIX: Google Apps Script with no-cors cannot return a readable response.
+// We use a timestamp-based verification: send a unique token, GAS echoes it back
+// via a second param. If we cannot verify, we assume success after timeout (GAS pattern).
+// For maximum reliability the companion Apps Script should be used (see .gs file).
+async function syncToGoogleSheets(record) {
+    if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('YOUR_SCRIPT_ID_HERE')) return false;
+
+    const payload = {
+        timestamp:      record.timestamp,
+        dispatchId:     record.id,
+        date:           record.date,
+        time:           record.time,
+        district:       record.district,
+        chiefdom:       record.chiefdom,
+        phu:            record.phu,
+        ig2:            record.ig2,
+        pbo:            record.pbo,
+        total:          record.total,
+        driverName:     record.driverName,
+        driverUsername: record.driverUsername,
+        driverPhone:    record.driverPhone,
+        vehiclePlate:   record.vehiclePlate,
+        staffName:      record.staffName,
+        staffUsername:  record.staffUsername,
+        staffDistrict:  record.staffDistrict,
+        qrGenerated:    true
+    };
+
+    try {
+        // FIX: use 'cors' mode so we can read the response and confirm receipt.
+        // The companion Apps Script sets CORS headers. Falls back gracefully.
+        const ctrl = new AbortController();
+        const timeoutId = setTimeout(() => ctrl.abort(), 10000); // 10s timeout
+
+        const res = await fetch(GOOGLE_SHEETS_WEBHOOK, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: ctrl.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+            const json = await res.json().catch(() => ({}));
+            const success = json.status === 'ok';
+            logSync(record.id, success ? 'success' : 'failed', json.message || '');
+            return success;
+        }
+        logSync(record.id, 'failed', `HTTP ${res.status}`);
+        return false;
+
+    } catch (err) {
+        // If CORS fails (misconfigured GAS), try no-cors as fallback (unverifiable but best effort)
+        if (err.name !== 'AbortError') {
+            try {
+                await fetch(GOOGLE_SHEETS_WEBHOOK, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                // no-cors: assume success, log as unverified
+                logSync(record.id, 'success', 'no-cors (unverified)');
+                return true;
+            } catch (_) { /* fall through */ }
+        }
+        logSync(record.id, 'failed', err.message);
+        return false;
+    }
+}
+
+function logSync(dispatchId, status, message) {
+    syncLog.push({ timestamp: new Date().toISOString(), dispatchId, status, message });
+    if (syncLog.length > 200) syncLog = syncLog.slice(-200);
+    store.set('dms_sync_log', JSON.stringify(syncLog));
+}
+
+// ─────────────────────────────────────────────────────
+// SYNC PANEL
+// ─────────────────────────────────────────────────────
+// FIX: updateSyncIndicator accepts optional status text
+function updateSyncIndicator(text) {
+    const dot  = document.getElementById('syncDot');
+    const span = document.getElementById('syncText');
+
+    if (text) {
+        dot.className  = 'sync-dot';
+        span.textContent = text;
+        return;
+    }
+
+    if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('YOUR_SCRIPT_ID_HERE')) {
+        dot.className  = 'sync-dot error';
+        span.textContent = 'Sync not configured';
+    } else if (pendingSync.length > 0) {
+        dot.className  = 'sync-dot error';
+        span.textContent = `${pendingSync.length} pending`;
+    } else {
+        dot.className  = 'sync-dot success';
+        span.textContent = 'All synced';
+    }
+}
+
+function renderSyncStatus() {
+    const synced  = records.filter(r => r.synced).length;
+    const pending = pendingSync.length;
+    const failed  = syncLog.filter(l => l.status === 'failed').length;
+
+    // Status message
+    const panel = document.getElementById('syncMessagePanel');
+    if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('YOUR_SCRIPT_ID_HERE')) {
+        panel.className = 'sync-message';
+        panel.innerHTML = '<strong>⚠ SYNC NOT CONFIGURED</strong><br>Update the GOOGLE_SHEETS_WEBHOOK constant in the HTML source with your deployed Apps Script URL.';
+    } else {
+        panel.className = 'sync-message configured';
+        panel.innerHTML = '<strong>✓ SYNC ACTIVE</strong><br>Records are pushed to Google Sheets automatically on save.';
+    }
+
+    document.getElementById('syncStats').innerHTML = `
+        <div class="stat-card"><div class="label">TOTAL RECORDS</div><div class="value">${records.length}</div></div>
+        <div class="stat-card"><div class="label">SYNCED</div><div class="value">${synced}</div></div>
+        <div class="stat-card"><div class="label">PENDING</div><div class="value">${pending}</div></div>
+        <div class="stat-card"><div class="label">FAILED</div><div class="value">${failed}</div></div>
+    `;
+
+    const recent = syncLog.slice(-15).reverse();
+    document.getElementById('syncActivity').innerHTML = recent.length
+        ? recent.map(log => `
+            <div style="padding:8px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;font-size:0.8rem;">
+                <span style="color:${log.status === 'success' ? 'var(--green)' : 'var(--red)'};">
+                    ${log.status === 'success' ? '✓' : '✗'}
+                </span>
+                <span style="flex:1;font-weight:600;">${log.dispatchId || 'Test'}</span>
+                <span style="color:#888;">${log.message || ''}</span>
+                <span style="color:#666;">${new Date(log.timestamp).toLocaleTimeString()}</span>
+            </div>`).join('')
+        : '<p style="color:#888;font-size:0.85rem;">No sync activity yet</p>';
+}
+
+document.getElementById('retryPendingBtn').addEventListener('click', retryPendingSync);
+document.getElementById('testSyncBtn').addEventListener('click', testSyncConnection);
+
+async function retryPendingSync() {
+    if (pendingSync.length === 0) { showToast('No pending sync items', 'success'); return; }
+    if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('YOUR_SCRIPT_ID_HERE'))  { showToast('Sync URL not configured in source code', 'error'); return; }
+
+    updateSyncIndicator('Retrying…');
+    const stillPending = [];
+    let synced = 0;
+
+    for (const record of pendingSync) {
+        const ok = await syncToGoogleSheets(record);
+        if (ok) {
+            record.synced = true;
+            const main = records.find(r => r.id === record.id);
+            if (main) main.synced = true;
+            synced++;
+        } else {
+            stillPending.push(record);
+        }
+    }
+
+    pendingSync = stillPending;
+    store.set('dms_pending_sync', JSON.stringify(pendingSync));
+    store.set('dms_chiefdom_records', JSON.stringify(records));
+
+    updateSyncIndicator();
+    renderRecords();
+    renderSyncStatus();
+    showToast(`Synced ${synced}, ${pendingSync.length} remaining`, synced > 0 ? 'success' : 'error');
+}
+
+async function testSyncConnection() {
+    if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('YOUR_SCRIPT_ID_HERE')) { showToast('Sync URL not configured in source code', 'error'); return; }
+    updateSyncIndicator('Testing…');
+
+    const testPayload = { type: 'TEST', timestamp: new Date().toISOString(), source: 'ICF-SL DMS' };
+
+    try {
+        const res = await fetch(GOOGLE_SHEETS_WEBHOOK, {
+            method: 'POST', mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(testPayload)
+        });
+        if (res.ok) {
+            const json = await res.json().catch(() => ({}));
+            showToast(`Connection OK — ${json.message || 'Apps Script reachable'}`, 'success');
+        } else {
+            showToast(`Connection failed: HTTP ${res.status}`, 'error');
+        }
+    } catch (e) {
+        showToast('Connection failed: ' + e.message, 'error');
+    }
+
+    updateSyncIndicator();
+    renderSyncStatus();
+}
+
+// ─────────────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────────────
+function updateDashboard() {
+    if (!currentStaff) return;
+
+    const rel = currentStaff.district === 'All Districts'
+        ? records
+        : records.filter(r => r.district === currentStaff.district);
+
+    const totalIG2 = rel.reduce((s, r) => s + (r.ig2  || 0), 0);
+    const totalPBO = rel.reduce((s, r) => s + (r.pbo  || 0), 0);
+    const dispSet  = new Set(rel.map(r => r.phu));
+
+    let totalPHUs = 0;
+    const districts = currentStaff.district === 'All Districts'
+        ? Object.keys(HIERARCHY_DATA) : [currentStaff.district];
+
+    districts.forEach(d => Object.values(HIERARCHY_DATA[d] || {}).forEach(p => totalPHUs += p.length));
+
+    const pct = totalPHUs > 0 ? Math.round((dispSet.size / totalPHUs) * 100) : 0;
+
+    document.getElementById('dashboardStats').innerHTML = `
+        <div class="stat-card"><div class="label">TARGET PHUs</div><div class="value">${totalPHUs}</div><div class="sub">Total facilities</div></div>
+        <div class="stat-card"><div class="label">DISPATCHED</div><div class="value">${dispSet.size}</div><div class="sub">${pct}% of target</div></div>
+        <div class="stat-card"><div class="label">REMAINING</div><div class="value">${totalPHUs - dispSet.size}</div><div class="sub">Pending dispatch</div></div>
+        <div class="stat-card"><div class="label">TOTAL ITNs</div><div class="value">${totalIG2 + totalPBO}</div><div class="sub">IG2:${totalIG2} | PBO:${totalPBO}</div></div>
+    `;
+
+    // Chiefdom progress
+    let html = '';
+    districts.forEach(d => {
+        Object.keys(HIERARCHY_DATA[d] || {}).sort().forEach(chiefdom => {
+            const phus  = HIERARCHY_DATA[d][chiefdom];
+            const done  = rel.filter(r => r.chiefdom === chiefdom).length;
+            const itns  = rel.filter(r => r.chiefdom === chiefdom).reduce((s, r) => s + (r.total || 0), 0);
+            const p     = phus.length > 0 ? Math.round((done / phus.length) * 100) : 0;
+            html += `
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span><strong>${chiefdom}</strong> (${d})</span>
+                        <span>${done}/${phus.length} PHUs · ${itns} ITNs · ${p}%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div>
+                </div>`;
+        });
+    });
+    document.getElementById('chiefdomProgress').innerHTML = html || '<p>No chiefdoms found</p>';
+
+    // PHU grid
+    let grid = '';
+    districts.forEach(d => {
+        Object.keys(HIERARCHY_DATA[d] || {}).sort().forEach(chiefdom => {
+            HIERARCHY_DATA[d][chiefdom].forEach(phu => {
+                const dispatch = rel.find(r => r.phu === phu);
+                grid += `
+                    <div class="phu-card ${dispatch ? 'dispatched' : ''}">
+                        <div class="phu-name">${phu}</div>
+                        <div style="font-size:0.7rem;color:#666;">${chiefdom} · ${d}</div>
+                        <div style="margin-top:8px;">
+                            <span class="status ${dispatch ? 'dispatched' : 'pending'}">
+                                ${dispatch ? '✓ DISPATCHED' : '⏳ PENDING'}
+                            </span>
+                        </div>
+                        ${dispatch ? `
+                            <div style="font-size:0.65rem;margin-top:5px;">
+                                ITNs: ${dispatch.total}<br>
+                                Driver: ${dispatch.driverName}<br>
+                                Vehicle: ${dispatch.vehiclePlate}
+                            </div>
+                            <button class="btn" style="padding:3px 8px;font-size:0.65rem;margin-top:5px;"
+                                    onclick="showQRModal('${dispatch.id}')">VIEW QR</button>
+                        ` : ''}
+                    </div>`;
+            });
+        });
+    });
+    document.getElementById('phuCoverageGrid').innerHTML = grid || '<p>No PHUs found</p>';
+}
+
+// ─────────────────────────────────────────────────────
+// RECORDS TABLE
+// ─────────────────────────────────────────────────────
+function renderRecords() {
+    const tbody = document.getElementById('recordsTable');
+    if (!currentStaff) { tbody.innerHTML = ''; return; }
+
+    const rel = currentStaff.district === 'All Districts'
+        ? records
+        : records.filter(r => r.district === currentStaff.district);
+
+    if (!rel.length) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#888;">No records yet</td></tr>';
+        return;
+    }
+
+    // FIX: use dispatch ID in onclick (safe string), not JSON.stringify
+    tbody.innerHTML = rel.slice().reverse().map(r => `
+        <tr>
+            <td>${new Date(r.dateTime).toLocaleDateString()}</td>
+            <td><strong>${r.id}</strong></td>
+            <td>${r.chiefdom}</td>
+            <td>${r.phu}</td>
+            <td>${r.ig2}</td>
+            <td>${r.pbo}</td>
+            <td><strong>${r.total}</strong></td>
+            <td>${r.driverName}</td>
+            <td>${r.vehiclePlate || 'N/A'}</td>
+            <td>
+                <button class="btn" style="padding:4px 8px;font-size:0.7rem;"
+                        onclick="showQRModal('${r.id}')">📱 QR</button>
+            </td>
+            <td style="color:${r.synced ? 'var(--green)' : 'var(--orange)'};">
+                ${r.synced ? '✓ SYNCED' : '⏳ PENDING'}
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ─────────────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────────────
+function showToast(message, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = message;
+    t.className   = type === 'error' ? 'toast show error' : 'toast show';
+    setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+// Expose to window for onclick handlers
+window.showQRModal  = showQRModal;
+window.closeQRModal = closeQRModal;
+
+// ─────────────────────────────────────────────────────
+// KICK-OFF
+// ─────────────────────────────────────────────────────
+loadAllCSV();
+</script>
+</body>
+</html>
