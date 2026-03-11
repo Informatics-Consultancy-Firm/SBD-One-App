@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICF-SL DMS Chiefdom Logistics — Visual Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f0f4f8;
+            font-family: 'Oswald', Arial, sans-serif;
+            color: #000;
+        }
+
+        .page-container { max-width: 1200px; margin: 0 auto; }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, #0B3B5C 0%, #1C4F70 100%);
+            color: white;
+            padding: 28px 30px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            border-bottom: 4px solid #E1A534;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 60px);
+        }
+        .header-inner { position: relative; z-index: 1; }
+        .header-logo {
+            width: 64px; height: 64px;
+            background: white; border-radius: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 14px; border: 3px solid #E1A534;
+        }
+        .header h1 { font-size: 28px; letter-spacing: 3px; font-weight: 700; }
+        .header h2 { font-size: 14px; font-weight: 400; margin-top: 6px; opacity: 0.85; }
+        .header p  { font-size: 11px; margin-top: 4px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+
+        .badge-row {
+            display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap;
+        }
+        .badge {
+            background: rgba(225,165,52,0.2); border: 1px solid #E1A534;
+            color: #E1A534; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600;
+        }
+
+        /* ── SECTION CARD ── */
+        .tool-section {
+            background: white; border-radius: 12px;
+            padding: 30px; margin-bottom: 25px;
+            box-shadow: 0 4px 18px rgba(0,59,92,0.10);
+            border-top: 4px solid #E1A534;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #0B3B5C, #1C4F70);
+            color: white; padding: 12px 20px;
+            border-radius: 8px; font-size: 17px; font-weight: 700;
+            text-align: center; margin-bottom: 26px; letter-spacing: 1.5px;
+        }
+        .section-title.gold { background: linear-gradient(135deg, #E1A534, #f5c45e); color: #0B3B5C; }
+        .section-title.green { background: linear-gradient(135deg, #1F7A4A, #2e9b5c); }
+
+        /* ── WORKFLOW ROW ── */
+        .workflow {
+            display: flex; align-items: flex-start; justify-content: center;
+            gap: 14px; flex-wrap: wrap;
+        }
+
+        .step-box { text-align: center; }
+
+        .step-label {
+            background: #0B3B5C; color: white;
+            padding: 5px 14px; border-radius: 20px;
+            font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+            margin-bottom: 10px; display: inline-block;
+        }
+        .step-label.gold { background: #E1A534; color: #0B3B5C; }
+        .step-label.green { background: #1F7A4A; }
+
+        .flow-box {
+            background: white; border: 3px solid #0B3B5C;
+            border-radius: 10px; padding: 18px; width: 195px; margin-bottom: 8px;
+        }
+        .flow-box.login  { border-color: #0B3B5C; background: linear-gradient(135deg, #e8f0f8, #d0e0ef); }
+        .flow-box.dash   { border-color: #E1A534; background: linear-gradient(135deg, #fffbf0, #fff3d4); }
+        .flow-box.disp   { border-color: #1C4F70; background: linear-gradient(135deg, #e5f0fa, #cce0f5); }
+        .flow-box.driver { border-color: #6f42c1; background: linear-gradient(135deg, #f5f0ff, #ede7f6); }
+        .flow-box.qr     { border-color: #1F7A4A; background: linear-gradient(135deg, #edf7f1, #d4edda); }
+        .flow-box.sync   { border-color: #E67E22; background: linear-gradient(135deg, #fef6ec, #fce8cf); }
+
+        .flow-icon { display: flex; justify-content: center; margin-bottom: 10px; }
+        .flow-name { font-size: 13px; font-weight: 700; color: #0B3B5C; margin-bottom: 4px; }
+        .flow-desc { font-size: 9.5px; color: #666; line-height: 1.5; }
+
+        .arrow { font-size: 26px; color: #0B3B5C; font-weight: 700; margin-top: 55px; }
+
+        .step-note { font-size: 10px; color: #888; margin-top: 5px; max-width: 195px; }
+
+        /* ── INFO LIST ── */
+        .check-list { margin-top: 10px; text-align: left; }
+        .check-item {
+            font-size: 9px; color: #0B3B5C; margin-bottom: 5px;
+            display: flex; align-items: flex-start; gap: 6px; line-height: 1.4;
+        }
+        .check-dot {
+            width: 13px; height: 13px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-top: 1px;
+        }
+
+        /* ── TABS VISUAL ── */
+        .tabs-visual {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px;
+        }
+        .tab-card {
+            border: 2px solid #0B3B5C; border-radius: 10px; overflow: hidden;
+        }
+        .tab-header {
+            background: #0B3B5C; color: white; padding: 10px; text-align: center;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+        }
+        .tab-header.active { background: #E1A534; color: #0B3B5C; }
+        .tab-body { padding: 14px; background: white; font-size: 9px; }
+        .tab-feature {
+            display: flex; align-items: flex-start; gap: 6px; margin-bottom: 7px; line-height: 1.4;
+        }
+
+        /* ── DATA FLOW (BEFORE/AFTER) ── */
+        .ba-grid {
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: start;
+            margin-top: 20px;
+        }
+        .ba-section {
+            border: 2px solid; border-radius: 10px; padding: 16px;
+        }
+        .ba-section.before { border-color: #dc3545; background: #fff8f8; }
+        .ba-section.after  { border-color: #1F7A4A; background: #f0fff6; }
+        .ba-label {
+            font-size: 11px; font-weight: 700; text-align: center;
+            padding: 6px; border-radius: 5px; margin-bottom: 12px;
+        }
+        .ba-section.before .ba-label { background: #f8d7da; color: #721c24; }
+        .ba-section.after  .ba-label { background: #d4edda; color: #155724; }
+
+        .mini-table { font-size: 9px; width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .mini-table th { background: #0B3B5C; color: white; padding: 4px 7px; text-align: left; }
+        .mini-table th.gold { background: #E1A534; color: #0B3B5C; }
+        .mini-table td { padding: 3px 7px; border-bottom: 1px solid #ddd; background: white; }
+        .mini-table tr:nth-child(even) td { background: #f8f9fa; }
+
+        .transform-arrow { font-size: 36px; color: #0B3B5C; text-align: center; padding-top: 60px; }
+
+        /* ── QR PREVIEW ── */
+        .qr-preview {
+            border: 3px solid #E1A534; border-radius: 10px;
+            padding: 12px; background: white; text-align: center; margin-top: 10px;
+        }
+        .qr-grid {
+            display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; width: 70px; margin: 8px auto;
+        }
+        .qr-cell {
+            width: 9px; height: 9px; border-radius: 1px;
+        }
+        .qr-cell.d { background: #0B3B5C; }
+        .qr-cell.l { background: #fff; border: 1px solid #eee; }
+
+        /* ── RECEIPT FIELDS ── */
+        .receipt-field {
+            display: flex; justify-content: space-between;
+            padding: 4px 0; border-bottom: 1px dashed #ccc; font-size: 9px;
+        }
+        .receipt-field span:last-child { font-weight: 600; color: #0B3B5C; }
+
+        /* ── STATS VISUAL ── */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin: 18px 0;
+        }
+        .stat-mini {
+            border: 2px solid #0B3B5C; border-radius: 8px; padding: 12px;
+            text-align: center; background: white;
+        }
+        .stat-mini .val { font-size: 22px; font-weight: 700; color: #0B3B5C; }
+        .stat-mini .lbl { font-size: 9px; color: #666; text-transform: uppercase; margin-top: 2px; }
+        .stat-mini.gold { border-color: #E1A534; }
+        .stat-mini.gold .val { color: #E1A534; }
+        .stat-mini.green { border-color: #1F7A4A; }
+        .stat-mini.green .val { color: #1F7A4A; }
+
+        /* ── PROGRESS BAR ── */
+        .prog-container { margin: 8px 0; }
+        .prog-header {
+            display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 3px;
+        }
+        .prog-bar { height: 9px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1F7A4A, #2ecc71);
+        }
+
+        /* ── ROLE CARDS ── */
+        .role-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px;
+        }
+        .role-card {
+            border: 2px solid; border-radius: 10px; padding: 16px; text-align: center;
+        }
+        .role-card.staff  { border-color: #0B3B5C; background: #e8f0f8; }
+        .role-card.driver { border-color: #1F7A4A; background: #edf7f1; }
+        .role-card.admin  { border-color: #E1A534; background: #fffbf0; }
+        .role-icon {
+            width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .role-card.staff  .role-icon { background: #0B3B5C; }
+        .role-card.driver .role-icon { background: #1F7A4A; }
+        .role-card.admin  .role-icon { background: #E1A534; }
+        .role-name { font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #0B3B5C; }
+        .role-detail { font-size: 9px; color: #555; line-height: 1.6; }
+
+        /* ── PHU STATUS ── */
+        .phu-mini-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 10px; }
+        .phu-mini {
+            border: 2px solid #e0e0e0; border-radius: 6px;
+            padding: 7px 8px; font-size: 8px;
+        }
+        .phu-mini.done { border-color: #1F7A4A; background: #edf7f1; }
+        .phu-mini.pend { border-color: #E1A534; background: #fffbf0; }
+        .phu-mini .nm  { font-weight: 600; color: #0B3B5C; margin-bottom: 3px; }
+        .phu-status {
+            font-size: 7px; padding: 2px 6px; border-radius: 8px; display: inline-block;
+        }
+        .phu-status.done { background: #1F7A4A; color: white; }
+        .phu-status.pend { background: #E1A534; color: #0B3B5C; }
+
+        /* ── SYNC PANEL ── */
+        .sync-row {
+            display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px;
+            align-items: center; margin-top: 16px;
+        }
+        .sync-node {
+            border: 2px solid; border-radius: 8px; padding: 14px 10px; text-align: center;
+        }
+        .sync-node.app  { border-color: #0B3B5C; background: #e8f0f8; }
+        .sync-node.queue{ border-color: #E67E22; background: #fef6ec; }
+        .sync-node.sheet{ border-color: #1F7A4A; background: #edf7f1; }
+        .sync-node-title{ font-size: 11px; font-weight: 700; color: #0B3B5C; margin-bottom: 4px; }
+        .sync-node.queue .sync-node-title{ color: #E67E22; }
+        .sync-node.sheet .sync-node-title{ color: #1F7A4A; }
+        .sync-node-desc { font-size: 8.5px; color: #666; line-height: 1.4; }
+        .sync-arrow { font-size: 22px; color: #0B3B5C; text-align: center; }
+
+        /* ── INFO GRID ── */
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            margin-top: 26px; padding-top: 22px; border-top: 2px dashed #0B3B5C;
+        }
+        .info-box {
+            background: #f8f9fa; border: 2px solid #0B3B5C;
+            border-radius: 8px; padding: 18px;
+        }
+        .info-box h4 { color: #0B3B5C; font-size: 13px; margin-bottom: 10px; text-transform: uppercase; }
+        .feat-item {
+            display: flex; align-items: flex-start; gap: 8px;
+            margin-bottom: 8px; font-size: 11px;
+        }
+
+        .tip-box {
+            margin-top: 12px; padding: 11px;
+            background: #e8f0f8; border-radius: 6px;
+            font-size: 10.5px; border-left: 4px solid #0B3B5C; line-height: 1.6;
+        }
+        .tip-box strong { color: #0B3B5C; }
+
+        /* ── VEHICLE PLATE ── */
+        .plate {
+            background: #0B3B5C; color: white; padding: 8px 16px;
+            border-radius: 6px; font-size: 20px; letter-spacing: 6px;
+            font-weight: 700; text-align: center; margin-top: 8px;
+        }
+
+        /* ── FILE STRUCTURE ── */
+        .csv-box {
+            background: #1e1e1e; border-radius: 8px; padding: 12px;
+            font-family: 'Courier New', monospace; font-size: 8.5px;
+            color: #9cdcfe; line-height: 1.7; margin-top: 8px;
+        }
+        .csv-box .hdr { color: #569cd6; font-weight: bold; }
+        .csv-box .val { color: #ce9178; }
+        .csv-box .kw  { color: #4ec9b0; }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: linear-gradient(135deg, #0B3B5C, #1C4F70);
+            color: white; padding: 16px; border-radius: 10px;
+            text-align: center; font-size: 13px; margin-top: 5px;
+            border-top: 3px solid #E1A534;
+        }
+
+        @media (max-width:900px) {
+            .workflow { flex-direction: column; align-items: center; }
+            .arrow { transform: rotate(90deg); margin: 8px 0; }
+            .tabs-visual { grid-template-columns: 1fr 1fr; }
+            .ba-grid { grid-template-columns: 1fr; }
+            .transform-arrow { transform: rotate(90deg); padding-top: 0; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .role-grid { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr; }
+            .sync-row { grid-template-columns: 1fr; }
+            .sync-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="page-container">
+
+    <!-- ══ HEADER ══ -->
+    <div class="header">
+        <div class="header-inner">
+            <div class="header-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <rect width="40" height="40" fill="#0B3B5C" rx="8"/>
+                    <text x="4" y="28" fill="#E1A534" font-size="14" font-family="Oswald" font-weight="700">ICF</text>
+                </svg>
+            </div>
+            <h1>ICF‑SL · DMS CHIEFDOM LOGISTICS</h1>
+            <h2>District-to-PHU ITN Distribution System with QR Receipts</h2>
+            <p>Visual User &amp; System Guide · v2.0</p>
+            <div class="badge-row">
+                <span class="badge">QR-ENABLED</span>
+                <span class="badge">OFFLINE-CAPABLE</span>
+                <span class="badge">GOOGLE SHEETS SYNC</span>
+                <span class="badge">CSV-BASED AUTH</span>
+                <span class="badge">IG2 + PBO TRACKING</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECTION 1: SYSTEM OVERVIEW WORKFLOW ══ -->
+    <div class="tool-section">
+        <div class="section-title">SYSTEM OVERVIEW — END-TO-END WORKFLOW</div>
+
+        <div class="workflow">
+
+            <!-- LOGIN -->
+            <div class="step-box">
+                <div class="step-label">STEP 1</div>
+                <div class="flow-box login">
+                    <div class="flow-icon">
+                        <svg width="44" height="44" viewBox="0 0 44 44">
+                            <circle cx="22" cy="14" r="8" fill="#0B3B5C" opacity="0.2" stroke="#0B3B5C" stroke-width="2"/>
+                            <circle cx="22" cy="14" r="4" fill="#0B3B5C"/>
+                            <path d="M8 38c0-8 6-14 14-14s14 6 14 14" stroke="#0B3B5C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            <rect x="16" y="32" width="12" height="8" rx="2" fill="#E1A534" opacity="0.8"/>
+                            <path d="M22 34 L22 38" stroke="#0B3B5C" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="flow-name">STAFF LOGIN</div>
+                    <div class="flow-desc">Enter DMS Staff username loaded from <strong>users.csv</strong></div>
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#0B3B5C;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            CSV auto-loaded on start
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#0B3B5C;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Role = "DMS Staff" required
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#0B3B5C;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            District auto-assigned
+                        </div>
+                    </div>
+                </div>
+                <div class="step-note">Users from <code>users.csv</code></div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <!-- DISPATCH FORM -->
+            <div class="step-box">
+                <div class="step-label">STEP 2</div>
+                <div class="flow-box disp">
+                    <div class="flow-icon">
+                        <svg width="44" height="44" viewBox="0 0 44 44">
+                            <rect x="6" y="6" width="32" height="32" rx="4" fill="none" stroke="#1C4F70" stroke-width="2"/>
+                            <line x1="12" y1="16" x2="32" y2="16" stroke="#1C4F70" stroke-width="1.5"/>
+                            <line x1="12" y1="22" x2="32" y2="22" stroke="#1C4F70" stroke-width="1.5"/>
+                            <line x1="12" y1="28" x2="24" y2="28" stroke="#1C4F70" stroke-width="1.5"/>
+                            <circle cx="32" cy="30" r="7" fill="#E1A534"/>
+                            <path d="M29 30 L31.5 32.5 L35 28" stroke="#0B3B5C" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="flow-name">DISPATCH FORM</div>
+                    <div class="flow-desc">Select Chiefdom &amp; PHU from hierarchy; enter IG2 / PBO quantities</div>
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#1C4F70;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Cascading dropdowns
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#1C4F70;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Auto-generated Dispatch ID
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#1C4F70;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Duplicate PHU warning
+                        </div>
+                    </div>
+                </div>
+                <div class="step-note">Data from <code>phu_hierarchy.csv</code></div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <!-- DRIVER VERIFY -->
+            <div class="step-box">
+                <div class="step-label">STEP 3</div>
+                <div class="flow-box driver">
+                    <div class="flow-icon">
+                        <svg width="44" height="44" viewBox="0 0 44 44">
+                            <rect x="6" y="28" width="32" height="12" rx="3" fill="#6f42c1" opacity="0.15" stroke="#6f42c1" stroke-width="2"/>
+                            <circle cx="22" cy="16" r="7" fill="none" stroke="#6f42c1" stroke-width="2"/>
+                            <circle cx="22" cy="16" r="3" fill="#6f42c1"/>
+                            <path d="M12 32 L32 32" stroke="#6f42c1" stroke-width="1.5" stroke-dasharray="3 2"/>
+                            <circle cx="16" cy="32" r="3" fill="#6f42c1"/>
+                            <circle cx="28" cy="32" r="3" fill="#6f42c1"/>
+                            <path d="M32 16 L36 12 M36 12 L40 16" stroke="#6f42c1" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="flow-name">VERIFY DRIVER</div>
+                    <div class="flow-desc">Enter driver username; system verifies from <strong>users.csv</strong> (role = Driver)</div>
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#6f42c1;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Password-masked input
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#6f42c1;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Driver name + phone shown
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#6f42c1;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Vehicle plate captured
+                        </div>
+                    </div>
+                </div>
+                <div class="step-note">Confidential username entry</div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <!-- QR GENERATE -->
+            <div class="step-box">
+                <div class="step-label" style="background:#1F7A4A;">STEP 4</div>
+                <div class="flow-box qr">
+                    <div class="flow-icon">
+                        <svg width="44" height="44" viewBox="0 0 44 44">
+                            <rect x="6" y="6" width="14" height="14" rx="2" fill="none" stroke="#1F7A4A" stroke-width="2"/>
+                            <rect x="9" y="9" width="8" height="8" fill="#1F7A4A" rx="1"/>
+                            <rect x="24" y="6" width="14" height="14" rx="2" fill="none" stroke="#1F7A4A" stroke-width="2"/>
+                            <rect x="27" y="9" width="8" height="8" fill="#1F7A4A" rx="1"/>
+                            <rect x="6" y="24" width="14" height="14" rx="2" fill="none" stroke="#1F7A4A" stroke-width="2"/>
+                            <rect x="9" y="27" width="8" height="8" fill="#1F7A4A" rx="1"/>
+                            <rect x="24" y="24" width="6" height="6" fill="#1F7A4A" rx="1"/>
+                            <rect x="32" y="24" width="6" height="6" fill="#1F7A4A" rx="1"/>
+                            <rect x="24" y="32" width="6" height="6" fill="#1F7A4A" rx="1"/>
+                            <rect x="32" y="32" width="6" height="6" fill="#1F7A4A" rx="1"/>
+                        </svg>
+                    </div>
+                    <div class="flow-name">GENERATE QR</div>
+                    <div class="flow-desc">QR code created with full delivery receipt; download or print</div>
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#1F7A4A;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Encodes full dispatch info
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#1F7A4A;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Download PNG / Print
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#1F7A4A;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Saved to local records
+                        </div>
+                    </div>
+                </div>
+                <div class="step-note">PHU verifies on delivery</div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <!-- SYNC -->
+            <div class="step-box">
+                <div class="step-label" style="background:#E67E22;">STEP 5</div>
+                <div class="flow-box sync">
+                    <div class="flow-icon">
+                        <svg width="44" height="44" viewBox="0 0 44 44">
+                            <circle cx="22" cy="22" r="14" fill="none" stroke="#E67E22" stroke-width="2.5" stroke-dasharray="6 3"/>
+                            <path d="M22 10 C30 10 34 16 34 22" stroke="#E67E22" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            <path d="M34 22 C34 28 30 34 22 34" stroke="#E67E22" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            <polygon points="22,6 26,12 18,12" fill="#E67E22"/>
+                            <polygon points="22,38 18,32 26,32" fill="#E67E22"/>
+                            <rect x="17" y="18" width="10" height="8" rx="1" fill="#E67E22" opacity="0.3"/>
+                            <text x="22" y="25" text-anchor="middle" fill="#E67E22" font-size="7" font-weight="700">GS</text>
+                        </svg>
+                    </div>
+                    <div class="flow-name">SYNC TO SHEETS</div>
+                    <div class="flow-desc">Auto-push to Google Sheets; offline queue with retry on reconnect</div>
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#E67E22;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            CORS + no-cors fallback
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#E67E22;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Pending queue stored locally
+                        </div>
+                        <div class="check-item">
+                            <div class="check-dot" style="background:#E67E22;">
+                                <svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                            </div>
+                            Manual retry available
+                        </div>
+                    </div>
+                </div>
+                <div class="step-note">Apps Script webhook</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECTION 2: REQUIRED CSV FILES ══ -->
+    <div class="tool-section">
+        <div class="section-title gold">REQUIRED CSV FILES — SYSTEM INPUTS</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+            <!-- users.csv -->
+            <div>
+                <div style="font-size:14px;font-weight:700;color:#0B3B5C;margin-bottom:10px;">
+                    📄 users.csv — Authentication Database
+                </div>
+                <div class="csv-box">
+<span class="hdr">username,full_name,role,district,phone</span>
+<span class="val">jkamara,James Kamara,</span><span class="kw">DMS Staff</span><span class="val">,Bombali,+23276...</span>
+<span class="val">akoroma,Alice Koroma,</span><span class="kw">DMS Staff</span><span class="val">,Bo,+23277...</span>
+<span class="val">mdriver1,Mohammed Kanu,</span><span class="kw">Driver</span><span class="val">,Bombali,+23278...</span>
+<span class="val">sdriver2,Sarah Sesay,</span><span class="kw">Driver</span><span class="val">,Bo,+23279...</span>
+                </div>
+                <div class="check-list" style="margin-top:10px;">
+                    <div class="check-item"><div class="check-dot" style="background:#E1A534;"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg></div> Role must be exactly "DMS Staff" or "Driver"</div>
+                    <div class="check-item"><div class="check-dot" style="background:#E1A534;"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg></div> district must match phu_hierarchy.csv districts</div>
+                    <div class="check-item"><div class="check-dot" style="background:#E1A534;"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg></div> Use "All Districts" for supervisors with full access</div>
+                </div>
+            </div>
+
+            <!-- phu_hierarchy.csv -->
+            <div>
+                <div style="font-size:14px;font-weight:700;color:#0B3B5C;margin-bottom:10px;">
+                    📄 phu_hierarchy.csv — Geographic Hierarchy
+                </div>
+                <div class="csv-box">
+<span class="hdr">district,chiefdom,phu_name</span>
+<span class="val">Bombali,Biriwa,</span><span class="kw">Makeni PHC</span>
+<span class="val">Bombali,Biriwa,</span><span class="kw">Kasiri MCHP</span>
+<span class="val">Bombali,Bombali Shebora,</span><span class="kw">Gbonkolenken CHP</span>
+<span class="val">Bo,Badjia,</span><span class="kw">Badjia PHC</span>
+<span class="val">Bo,Badjia,</span><span class="kw">Ngolala MCHP</span>
+                </div>
+                <div class="check-list" style="margin-top:10px;">
+                    <div class="check-item"><div class="check-dot" style="background:#1C4F70;"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg></div> Three-level hierarchy: district → chiefdom → PHU</div>
+                    <div class="check-item"><div class="check-dot" style="background:#1C4F70;"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg></div> One row per PHU (multiple PHUs per chiefdom)</div>
+                    <div class="check-item"><div class="check-dot" style="background:#1C4F70;"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M2 4 L3.5 5.5 L6 3" stroke="white" stroke-width="1.5" fill="none"/></svg></div> Staff see only their assigned district's PHUs</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ SECTION 3: TABS / PANELS ══ -->
+    <div class="tool-section">
+        <div class="section-title">THE 4 APP PANELS — WHAT EACH TAB DOES</div>
+
+        <div class="tabs-visual">
+
+            <!-- Dashboard -->
+            <div class="tab-card">
+                <div class="tab-header active">📊 DASHBOARD</div>
+                <div class="tab-body">
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E1A534"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        4 summary stat cards (PHUs, dispatched, remaining, total ITNs)
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E1A534"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Progress bars per chiefdom showing % PHUs covered
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E1A534"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        PHU grid cards (green = dispatched, gold = pending)
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E1A534"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        "VIEW QR" button on each dispatched PHU card
+                    </div>
+
+                    <div style="margin-top:10px;">
+                        <div class="stats-row" style="grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;">
+                            <div class="stat-mini"><div class="val">24</div><div class="lbl">Target PHUs</div></div>
+                            <div class="stat-mini green"><div class="val">18</div><div class="lbl">Dispatched</div></div>
+                            <div class="stat-mini gold"><div class="val">6</div><div class="lbl">Remaining</div></div>
+                            <div class="stat-mini"><div class="val">4,320</div><div class="lbl">Total ITNs</div></div>
+                        </div>
+                        <div class="prog-container">
+                            <div class="prog-header"><span>Biriwa Chiefdom</span><span>3/5 · 60%</span></div>
+                            <div class="prog-bar"><div class="prog-fill" style="width:60%"></div></div>
+                        </div>
+                        <div class="prog-container">
+                            <div class="prog-header"><span>Bombali Shebora</span><span>5/5 · 100%</span></div>
+                            <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dispatch -->
+            <div class="tab-card">
+                <div class="tab-header">➕ NEW DISPATCH</div>
+                <div class="tab-body">
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#0B3B5C"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Auto-filled: date/time, staff name, dispatch ID
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#0B3B5C"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Chiefdom → PHU cascading dropdowns
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#0B3B5C"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        IG2 + PBO quantities with live total
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#0B3B5C"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Driver verification (masked username input)
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#0B3B5C"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Vehicle plate: 3 letters + 3 numbers (e.g. ABC-123)
+                    </div>
+
+                    <div style="margin-top:10px;background:#f8f9fa;border-radius:6px;padding:8px;font-size:8.5px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px;">
+                            <div style="background:white;border:1px solid #dde;border-radius:4px;padding:4px;font-size:8px;">Chiefdom ▼</div>
+                            <div style="background:white;border:1px solid #dde;border-radius:4px;padding:4px;font-size:8px;">PHU ▼</div>
+                            <div style="background:white;border:1px solid #dde;border-radius:4px;padding:4px;font-size:8px;">IG2: 150</div>
+                            <div style="background:white;border:1px solid #dde;border-radius:4px;padding:4px;font-size:8px;">PBO: 80</div>
+                        </div>
+                        <div style="background:#0B3B5C;color:white;border-radius:4px;padding:5px;display:flex;justify-content:space-between;font-size:9px;">
+                            <span>TOTAL ITNs</span><strong>230</strong>
+                        </div>
+                        <div class="plate" style="font-size:12px;padding:5px;margin-top:6px;">ABC-123</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Records -->
+            <div class="tab-card">
+                <div class="tab-header">📋 RECORDS &amp; QR</div>
+                <div class="tab-body">
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#1C4F70"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Full dispatch log table (newest first)
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#1C4F70"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Columns: Date, Dispatch ID, Chiefdom, PHU, IG2, PBO, Total, Driver, Vehicle, QR, Sync
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#1C4F70"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        "📱 QR" button opens modal with large QR view
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#1C4F70"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Per-row sync status (✓ SYNCED / ⏳ PENDING)
+                    </div>
+
+                    <div style="margin-top:10px;overflow-x:auto;">
+                        <table class="mini-table">
+                            <thead><tr><th>ID</th><th>PHU</th><th>Total</th><th>Sync</th></tr></thead>
+                            <tbody>
+                                <tr><td style="font-size:7px;">DSP-2025…</td><td>Makeni PHC</td><td>230</td><td style="color:#1F7A4A;font-size:8px;">✓</td></tr>
+                                <tr><td style="font-size:7px;">DSP-2025…</td><td>Kasiri MCHP</td><td>180</td><td style="color:#E67E22;font-size:8px;">⏳</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sync -->
+            <div class="tab-card">
+                <div class="tab-header">🔄 SYNC STATUS</div>
+                <div class="tab-body">
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E67E22"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Sync configuration status banner
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E67E22"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Stats: Total / Synced / Pending / Failed
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E67E22"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        "↺ RETRY PENDING" — manually re-sync failed records
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E67E22"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        "TEST CONNECTION" — verify Apps Script is reachable
+                    </div>
+                    <div class="tab-feature">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#E67E22"/><path d="M3.5 6 L5 7.5 L8.5 4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                        Recent sync activity log (last 15 entries)
+                    </div>
+
+                    <div style="margin-top:10px;background:#fef6ec;border:1px solid #E67E22;border-radius:6px;padding:8px;font-size:8.5px;">
+                        <div style="color:#E67E22;font-weight:700;margin-bottom:4px;">SYNC LOG (RECENT)</div>
+                        <div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px dashed #eee;">
+                            <span style="color:#1F7A4A;">✓</span>
+                            <span style="flex:1;font-size:8px;">DSP-2025…-4312</span>
+                            <span style="color:#888;font-size:7px;">10:23 AM</span>
+                        </div>
+                        <div style="display:flex;gap:6px;align-items:center;padding:3px 0;">
+                            <span style="color:#dc3545;">✗</span>
+                            <span style="flex:1;font-size:8px;">DSP-2025…-7821</span>
+                            <span style="color:#888;font-size:7px;">10:18 AM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ SECTION 4: QR RECEIPT CONTENT ══ -->
+    <div class="tool-section">
+        <div class="section-title green">QR CODE — WHAT IT CONTAINS &amp; HOW TO USE IT</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
+
+            <!-- QR Visual -->
+            <div style="text-align:center;">
+                <div style="font-size:13px;font-weight:700;color:#0B3B5C;margin-bottom:10px;">QR CODE STRUCTURE</div>
+                <div class="qr-preview">
+                    <div style="font-size:9px;background:#E1A534;color:#0B3B5C;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:8px;font-weight:600;">ICF-SL-DELIVERY v1.0</div>
+                    <!-- Simplified QR pattern -->
+                    <div style="width:80px;height:80px;margin:0 auto;background:
+                        repeating-conic-gradient(#0B3B5C 0% 25%, white 0% 50%) 0 0 / 8px 8px;
+                        border:3px solid #E1A534;border-radius:4px;"></div>
+                    <div style="font-size:9px;color:#666;margin-top:8px;">Scanned by PHU staff on delivery</div>
+                </div>
+                <div style="margin-top:12px;font-size:9px;text-align:left;">
+                    <div style="font-weight:700;color:#0B3B5C;margin-bottom:5px;">QR DATA FIELDS:</div>
+                    <div class="receipt-field"><span>type</span><span>ICF-SL-DELIVERY</span></div>
+                    <div class="receipt-field"><span>dispatchId</span><span>DSP-20250615-4312</span></div>
+                    <div class="receipt-field"><span>district</span><span>Bombali</span></div>
+                    <div class="receipt-field"><span>chiefdom</span><span>Biriwa</span></div>
+                    <div class="receipt-field"><span>phu</span><span>Makeni PHC</span></div>
+                    <div class="receipt-field"><span>ig2 / pbo / total</span><span>150 / 80 / 230</span></div>
+                    <div class="receipt-field"><span>driverName</span><span>Mohammed Kanu</span></div>
+                    <div class="receipt-field"><span>vehiclePlate</span><span>ABC-123</span></div>
+                    <div class="receipt-field"><span>dmsStaff</span><span>James Kamara</span></div>
+                    <div class="receipt-field"><span>verificationCode</span><span>4312</span></div>
+                </div>
+            </div>
+
+            <!-- Receipt Info -->
+            <div>
+                <div style="font-size:13px;font-weight:700;color:#0B3B5C;margin-bottom:10px;">PRINTED RECEIPT LAYOUT</div>
+                <div style="border:2px solid #E1A534;border-radius:10px;padding:14px;background:white;">
+                    <div style="text-align:center;border-bottom:2px solid #E1A534;padding-bottom:10px;margin-bottom:10px;">
+                        <div style="font-size:13px;font-weight:700;color:#0B3B5C;">ICF‑Sierra Leone</div>
+                        <div style="font-size:10px;color:#666;">ITN Delivery Receipt</div>
+                    </div>
+                    <div style="background:#e0e0e0;width:80px;height:80px;margin:0 auto 10px;border:2px solid #E1A534;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#666;">[QR IMAGE]</div>
+                    <div class="receipt-field"><span>Dispatch ID:</span><span>DSP-2025-4312</span></div>
+                    <div class="receipt-field"><span>Date:</span><span>15/06/2025 10:23</span></div>
+                    <div class="receipt-field"><span>Destination:</span><span>Bombali → Biriwa → Makeni PHC</span></div>
+                    <div class="receipt-field"><span>ITNs:</span><span>IG2:150 | PBO:80 | Total:230</span></div>
+                    <div class="receipt-field"><span>Driver:</span><span>Mohammed Kanu</span></div>
+                    <div class="receipt-field"><span>Vehicle:</span><span>ABC-123</span></div>
+                    <div style="text-align:center;margin-top:8px;font-size:7.5px;color:#888;border-top:1px dashed #ccc;padding-top:6px;">
+                        Scan QR to verify authenticity<br>ICF‑SL · 15/06/2025 10:23
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to use -->
+            <div>
+                <div style="font-size:13px;font-weight:700;color:#0B3B5C;margin-bottom:10px;">QR USAGE AT PHU</div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div style="border:2px solid #1F7A4A;border-radius:8px;padding:12px;background:#edf7f1;">
+                        <div style="font-size:11px;font-weight:700;color:#1F7A4A;margin-bottom:5px;">① DISPATCH STAFF</div>
+                        <div style="font-size:9px;line-height:1.6;color:#333;">Generate QR at DMS warehouse. Download PNG and/or print physical receipt. Attach to shipment or share with driver.</div>
+                    </div>
+                    <div style="border:2px solid #1C4F70;border-radius:8px;padding:12px;background:#e5f0fa;">
+                        <div style="font-size:11px;font-weight:700;color:#1C4F70;margin-bottom:5px;">② DRIVER CARRIES</div>
+                        <div style="font-size:9px;line-height:1.6;color:#333;">Driver transports ITNs and physical/digital QR receipt to the target PHU facility.</div>
+                    </div>
+                    <div style="border:2px solid #E1A534;border-radius:8px;padding:12px;background:#fffbf0;">
+                        <div style="font-size:11px;font-weight:700;color:#856404;margin-bottom:5px;">③ PHU STAFF SCANS</div>
+                        <div style="font-size:9px;line-height:1.6;color:#333;">PHU in-charge uses phone camera to scan QR. Reads district, chiefdom, PHU, ITN quantities, driver name and verification code to confirm delivery.</div>
+                    </div>
+                </div>
+                <div class="tip-box" style="margin-top:12px;">
+                    <strong>Verification Code:</strong> Last 6 characters of the Dispatch ID (e.g. <strong>4312</strong>). PHU can verify verbally even without a scanner.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ SECTION 5: USER ROLES ══ -->
+    <div class="tool-section">
+        <div class="section-title gold">USER ROLES — WHO DOES WHAT</div>
+
+        <div class="role-grid">
+            <div class="role-card staff">
+                <div class="role-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="role-name">DMS STAFF</div>
+                <div style="display:inline-block;background:#0B3B5C;color:white;padding:2px 10px;border-radius:10px;font-size:9px;margin-bottom:8px;">Role: DMS Staff</div>
+                <div class="role-detail">
+                    ✓ Login &amp; create dispatches<br>
+                    ✓ Select chiefdom / PHU<br>
+                    ✓ Enter ITN quantities<br>
+                    ✓ Verify driver &amp; vehicle<br>
+                    ✓ Generate &amp; download QR<br>
+                    ✓ View all records<br>
+                    ✓ Retry sync<br>
+                    ✗ Cannot log in as Driver
+                </div>
+            </div>
+            <div class="role-card driver">
+                <div class="role-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4l3 3"/>
+                    </svg>
+                </div>
+                <div class="role-name">DRIVER</div>
+                <div style="display:inline-block;background:#1F7A4A;color:white;padding:2px 10px;border-radius:10px;font-size:9px;margin-bottom:8px;">Role: Driver</div>
+                <div class="role-detail">
+                    ✓ Username verified during dispatch<br>
+                    ✓ Name + phone shown on receipt<br>
+                    ✓ Tied to every QR code generated<br>
+                    ✗ Cannot login to the app<br>
+                    ✗ Cannot create dispatches<br>
+                    — Entry via masked username only<br>
+                    — One verification per dispatch
+                </div>
+            </div>
+            <div class="role-card admin">
+                <div class="role-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B3B5C" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="role-name">ALL DISTRICTS</div>
+                <div style="display:inline-block;background:#E1A534;color:#0B3B5C;padding:2px 10px;border-radius:10px;font-size:9px;margin-bottom:8px;">Special Access</div>
+                <div class="role-detail">
+                    ✓ Set district = "All Districts"<br>
+                    ✓ Sees ALL chiefdoms / PHUs<br>
+                    ✓ Sees ALL records in table<br>
+                    ✓ Dashboard shows national totals<br>
+                    — Useful for supervisors &amp; managers<br>
+                    — Assigned in users.csv manually<br>
+                    — Same login flow as DMS Staff
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECTION 6: DATA FLOW ══ -->
+    <div class="tool-section">
+        <div class="section-title">BEFORE &amp; AFTER — DISPATCH CREATES A RECORD</div>
+
+        <div class="ba-grid">
+            <div class="ba-section before">
+                <div class="ba-label">BEFORE DISPATCH — PHU PENDING</div>
+                <div style="font-size:10px;color:#666;margin-bottom:8px;">PHU grid shows all facilities as pending. Dashboard shows 0% coverage for this chiefdom.</div>
+                <div class="phu-mini-grid">
+                    <div class="phu-mini pend"><div class="nm">Makeni PHC</div><span class="phu-status pend">⏳ PENDING</span></div>
+                    <div class="phu-mini pend"><div class="nm">Kasiri MCHP</div><span class="phu-status pend">⏳ PENDING</span></div>
+                    <div class="phu-mini pend"><div class="nm">Gbonko CHP</div><span class="phu-status pend">⏳ PENDING</span></div>
+                </div>
+                <div class="prog-container" style="margin-top:10px;">
+                    <div class="prog-header"><span>Biriwa</span><span>0/3 · 0%</span></div>
+                    <div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="transform-arrow">→</div>
+
+            <div class="ba-section after">
+                <div class="ba-label">AFTER DISPATCH — PHU COVERED</div>
+                <div style="font-size:10px;color:#333;margin-bottom:8px;">Dispatched PHU turns green. QR generated. Record saved. Progress bar updates. Sync pushed to Google Sheets.</div>
+                <div class="phu-mini-grid">
+                    <div class="phu-mini done">
+                        <div class="nm">Makeni PHC</div>
+                        <span class="phu-status done">✓ DISPATCHED</span>
+                        <div style="font-size:7px;color:#555;margin-top:3px;">230 ITNs · ABC-123</div>
+                    </div>
+                    <div class="phu-mini pend"><div class="nm">Kasiri MCHP</div><span class="phu-status pend">⏳ PENDING</span></div>
+                    <div class="phu-mini pend"><div class="nm">Gbonko CHP</div><span class="phu-status pend">⏳ PENDING</span></div>
+                </div>
+                <div class="prog-container" style="margin-top:10px;">
+                    <div class="prog-header"><span>Biriwa</span><span>1/3 · 33%</span></div>
+                    <div class="prog-bar"><div class="prog-fill" style="width:33%"></div></div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <table class="mini-table">
+                        <thead><tr><th>Dispatch ID</th><th>PHU</th><th>Total</th><th class="gold">Sync</th></tr></thead>
+                        <tbody>
+                            <tr><td style="font-size:7.5px;">DSP-20250615-4312</td><td>Makeni PHC</td><td>230</td><td style="color:#1F7A4A;font-size:9px;">✓</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECTION 7: SYNC ARCHITECTURE ══ -->
+    <div class="tool-section">
+        <div class="section-title">GOOGLE SHEETS SYNC ARCHITECTURE</div>
+
+        <div class="sync-row">
+            <div class="sync-node app">
+                <div style="text-align:center;margin-bottom:8px;">
+                    <svg width="28" height="28" viewBox="0 0 28 28"><rect x="3" y="3" width="22" height="22" rx="4" fill="#0B3B5C"/><rect x="7" y="9" width="14" height="2" rx="1" fill="#E1A534"/><rect x="7" y="13" width="10" height="2" rx="1" fill="white" opacity="0.7"/><rect x="7" y="17" width="6" height="2" rx="1" fill="white" opacity="0.5"/></svg>
+                </div>
+                <div class="sync-node-title">DMS WEB APP</div>
+                <div class="sync-node-desc">Record saved locally in browser localStorage. Dispatch data ready to push.</div>
+            </div>
+
+            <div class="sync-arrow">→</div>
+
+            <div class="sync-node queue">
+                <div style="text-align:center;margin-bottom:8px;">
+                    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="10" fill="none" stroke="#E67E22" stroke-width="2.5"/><path d="M14 8 L14 14 L18 16" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="sync-node-title">PENDING QUEUE</div>
+                <div class="sync-node-desc">If sync fails (offline / timeout), record added to local pending queue. Retried on next save or manual retry.</div>
+            </div>
+
+            <div class="sync-arrow">→</div>
+
+            <div class="sync-node sheet">
+                <div style="text-align:center;margin-bottom:8px;">
+                    <svg width="28" height="28" viewBox="0 0 28 28"><rect x="3" y="3" width="22" height="22" rx="4" fill="#1F7A4A"/><rect x="7" y="9" width="14" height="2" rx="1" fill="white" opacity="0.9"/><rect x="7" y="13" width="14" height="2" rx="1" fill="white" opacity="0.6"/><rect x="7" y="17" width="14" height="2" rx="1" fill="white" opacity="0.4"/><line x1="12" y1="7" x2="12" y2="21" stroke="white" stroke-width="1" opacity="0.4"/><line x1="17" y1="7" x2="17" y2="21" stroke="white" stroke-width="1" opacity="0.4"/></svg>
+                </div>
+                <div class="sync-node-title">GOOGLE SHEETS</div>
+                <div class="sync-node-desc">Apps Script /exec webhook receives POST request, appends row to master sheet with all 19 dispatch fields.</div>
+            </div>
+        </div>
+
+        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="tip-box">
+                <strong>Setup:</strong> In the HTML source, replace <code>YOUR_SCRIPT_ID_HERE</code> in the <code>GOOGLE_SHEETS_WEBHOOK</code> constant with your deployed Google Apps Script URL (ends in <code>/exec</code>).
+            </div>
+            <div class="tip-box">
+                <strong>Offline Mode:</strong> The app works fully offline. Records are stored in localStorage. When connectivity returns, use "↺ RETRY PENDING SYNC" to push queued dispatches to Google Sheets.
+            </div>
+        </div>
+
+        <div style="margin-top:16px;">
+            <div style="font-size:12px;font-weight:700;color:#0B3B5C;margin-bottom:8px;">FIELDS PUSHED TO GOOGLE SHEETS (19 columns):</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">timestamp</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">dispatchId</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">date</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">time</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">district</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">chiefdom</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">phu</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">ig2</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">pbo</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">total</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">driverName</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">driverPhone</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">vehiclePlate</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">staffName</span>
+                <span style="background:#e8f0f8;border:1px solid #0B3B5C;color:#0B3B5C;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">staffDistrict</span>
+                <span style="background:#d4edda;border:1px solid #1F7A4A;color:#155724;padding:3px 9px;border-radius:12px;font-size:9px;font-family:monospace;">qrGenerated ✓</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECTION 8: KEY FEATURES ══ -->
+    <div class="tool-section">
+        <div class="section-title gold">KEY FEATURES &amp; TECHNICAL NOTES</div>
+
+        <div class="info-grid">
+            <div class="info-box">
+                <h4>Security &amp; Data Integrity</h4>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#1F7A4A"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>Masked username fields</strong> — both staff login and driver verification use password-type inputs with show/hide toggle</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#1F7A4A"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>Duplicate PHU protection</strong> — warning shown and Save button disabled if PHU was already dispatched</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#1F7A4A"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>Vehicle plate validation</strong> — exactly 3 uppercase letters + 3 digits required (ABC-123 format)</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#1F7A4A"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>Role-based access</strong> — DMS Staff see only their district's data; only "All Districts" users see nationally</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#1F7A4A"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>localStorage safety wrapper</strong> — falls back to in-memory store if browser blocks localStorage (e.g. Safari ITP)</span>
+                </div>
+                <div class="tip-box">
+                    <strong>Note:</strong> Driver usernames are never displayed in dispatch records — only the driver's full name and phone number appear, protecting credential confidentiality.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Offline &amp; Performance</h4>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0B3B5C"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>Fully offline-capable</strong> — all records saved to localStorage/memory immediately on save, before sync attempt</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0B3B5C"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>10-second sync timeout</strong> — AbortController cancels hanging requests; fallback to no-cors mode</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0B3B5C"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>QR generation is async</strong> — Promise-based flow ensures QR is fully rendered before form reset and record is stored</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0B3B5C"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>recordsMap lookup</strong> — dispatch records indexed by ID for O(1) QR modal retrieval; avoids JSON.stringify in onclick attributes</span>
+                </div>
+                <div class="feat-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0B3B5C"/><path d="M5 8 L7 10 L11 6" stroke="white" stroke-width="1.5" fill="none"/></svg>
+                    <span><strong>Sync log capped at 200 entries</strong> — prevents unbounded localStorage growth over long campaigns</span>
+                </div>
+                <div class="tip-box">
+                    <strong>File Dependencies:</strong> Place <code>users.csv</code>, <code>phu_hierarchy.csv</code>, and optionally <code>icf-sl.jpg</code> (logo) in the same folder as the HTML file. The app loads them automatically on startup.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ FOOTER ══ -->
+    <div class="footer">
+        <strong>Informatics Consultancy Firm — Sierra Leone (ICF-SL)</strong><br>
+        <span style="font-size:11px;opacity:0.8;">DMS Chiefdom Logistics with QR · Visual System Guide · v2.0</span>
+    </div>
+
+</div>
+</body>
+</html>
