@@ -1,7 +1,7 @@
 {
-  "name": "ICF-SL Tool Launcher",
-  "short_name": "ICF Tools",
-  "description": "ICF-SL Data Management and Analysis Tools — National Malaria Control Programme, Sierra Leone",
+  "name": "SBD Campaign 2026",
+  "short_name": "SBD 2026",
+  "description": "School Based Distribution of ITNs (SBD) Campaign 2026",
   "start_url": "./icf-tool-launcher.html",
   "id": "./icf-tool-launcher.html",
   "display": "standalone",
@@ -13,39 +13,10 @@
   "dir": "ltr",
   "categories": ["health", "productivity"],
   "icons": [
-    {
-      "src": "icon-192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "form_factor": "wide",
-      "label": "ICF-SL Tool Launcher"
-    }
+    { "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
   ],
   "prefer_related_applications": false
 }
