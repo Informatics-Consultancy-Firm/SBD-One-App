@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ICF-SL Tool Launcher</title>
+
+<!-- PWA -->
+<meta name="description" content="ICF-SL Data Management and Analysis Tools">
+<meta name="theme-color" content="#004080">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ICF Tools">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.svg">
+
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,7 +29,8 @@
   .header::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(200,151,58,0.06) 60px,rgba(200,151,58,0.06) 61px); pointer-events: none; }
   .header-left { display: flex; align-items: center; gap: 18px; }
   .logo-box { background: #fff; border-radius: 7px; padding: 6px 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .logo-box img { height: 46px; width: auto; border-radius: 4px; display: block; }
+  .logo-box img { height: 46px; width: auto; max-width: 90px; border-radius: 4px; display: block; object-fit: contain; }
+  .logo-placeholder { height: 46px; width: 80px; background: rgba(255,255,255,0.15); border: 1.5px dashed rgba(255,255,255,0.4); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,0.6); text-transform: uppercase; text-align: center; padding: 4px; }
   .header-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
   .header-title { color: var(--white); font-size: 15px; font-weight: 500; letter-spacing: 0.5px; line-height: 1.2; }
   .header-title span { display: block; font-size: 11px; font-weight: 300; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
@@ -94,8 +105,29 @@
   .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left:0; right:0; height: 2px; background: var(--gold); }
   .tab-icon { font-size: 16px; }
 
-  .modal-body { flex: 1; overflow: hidden; position: relative; }
+  .modal-body { flex: 1; overflow: hidden; position: relative; background: #000; }
   .modal-iframe { width: 100%; height: 100%; border: none; display: none; }
+
+  /* Video player */
+  .video-wrap { position: absolute; inset: 0; display: none; flex-direction: column; background: #0a0a0a; }
+  .video-wrap.visible { display: flex; }
+  .video-wrap video { width: 100%; height: 100%; object-fit: contain; flex: 1; }
+  .video-controls { flex-shrink: 0; background: var(--navy); padding: 12px 24px; display: flex; align-items: center; gap: 14px; }
+  .vc-play { width: 36px; height: 36px; background: var(--gold); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+  .vc-play:hover { background: #e0aa4a; transform: scale(1.08); }
+  .vc-play svg { width: 14px; height: 14px; fill: var(--navy-dark); }
+  .vc-progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .vc-seek { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; cursor: pointer; }
+  .vc-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); cursor: pointer; }
+  .vc-seek::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: none; cursor: pointer; }
+  .vc-time { color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 400; letter-spacing: 0.5px; }
+  .vc-right { display: flex; align-items: center; gap: 10px; }
+  .vc-vol { width: 70px; -webkit-appearance: none; appearance: none; height: 3px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; cursor: pointer; }
+  .vc-vol::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); cursor: pointer; }
+  .vc-vol::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); border: none; cursor: pointer; }
+  .vc-fullscreen { width: 30px; height: 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .vc-fullscreen:hover { background: rgba(255,255,255,0.2); }
+  .vc-fullscreen svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.8); fill: none; }
 
   /* States */
   .state-loading, .state-placeholder { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; background: #f5f8fc; }
@@ -108,36 +140,138 @@
   .placeholder-body  { color: var(--muted); font-size: 13px; font-weight: 300; line-height: 1.8; max-width: 400px; }
   .placeholder-body code { background: #e8f0fb; color: var(--navy); padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
 
-  /* Responsive */
-  @media(max-width:900px){ .cards-grid{grid-template-columns:repeat(2,1fr)} .main,.hero-band{padding-left:20px;padding-right:20px} .header{padding:0 20px} }
-  @media(max-width:580px){ .cards-grid{grid-template-columns:1fr} .hero-band h1{font-size:26px} .modal-tabs{flex-direction:column} .tab-btn{border-right:none;border-bottom:1px solid var(--border)} .tab-btn:last-child{border-bottom:none} .header-right{display:none} }
+  /* Responsive — tablet */
+  @media(max-width:900px){
+    .cards-grid { grid-template-columns: repeat(2,1fr); }
+    .main, .hero-band { padding-left: 16px; padding-right: 16px; }
+    .header { padding: 0 16px; min-height: 60px; }
+    .logo-box img { height: 38px; }
+    .logo-placeholder { height: 38px; width: 60px; }
+    .header-title { font-size: 13px; }
+    .header-title span { font-size: 10px; }
+  }
+
+  /* Responsive — phone */
+  @media(max-width:580px){
+    .header { padding: 8px 12px; min-height: auto; flex-wrap: wrap; gap: 8px; }
+    .header-left { flex-wrap: wrap; gap: 8px; }
+    .logo-box { padding: 4px 6px; }
+    .logo-box img { height: 32px; }
+    .logo-placeholder { height: 32px; width: 50px; font-size: 7px; }
+    .header-divider { display: none; }
+    .header-title { font-size: 12px; }
+    .header-title span { font-size: 9px; }
+    .pwa-install-btn { font-size: 10px; padding: 6px 14px; }
+
+    .hero-band { padding: 20px 12px 18px; }
+    .hero-band h1 { font-size: 22px; }
+    .hero-band p { font-size: 12px; }
+    .hero-tag { font-size: 8px; }
+
+    .main { padding: 16px 12px 24px; }
+    .cards-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { min-height: 160px; }
+    .card-name { font-size: 12px; }
+    .card-desc { font-size: 10px; }
+
+    .modal-header { padding: 0 14px; min-height: 54px; }
+    .modal-title-text { font-size: 13px; }
+    .modal-tabs { flex-direction: row; }
+    .tab-btn { font-size: 11px; padding: 10px 6px; gap: 4px; }
+    .tab-icon { font-size: 13px; }
+
+    .page-footer { padding: 14px 12px; font-size: 9px; }
+  }
+
+  /* Very small phones */
+  @media(max-width:360px){
+    .cards-grid { grid-template-columns: 1fr; }
+    .logo-box { padding: 3px 5px; }
+    .logo-box img { height: 28px; }
+    .header-title { font-size: 11px; }
+    .modal-tabs { flex-direction: column; }
+    .tab-btn { border-right: none; border-bottom: 1px solid var(--border); }
+    .tab-btn:last-child { border-bottom: none; }
+  }
+
+  /* ── PWA install button (permanent, in header) ── */
+  .pwa-install-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    animation: pulseGlow 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulseGlow {
+    0%,100% { box-shadow: 0 4px 15px rgba(40,167,69,0.4); }
+    50%      { box-shadow: 0 4px 25px rgba(40,167,69,0.8); }
+  }
+  .pwa-install-btn:hover { transform: translateY(-2px) scale(1.05); }
+  .pwa-install-btn.installed {
+    background: linear-gradient(135deg, #004080 0%, #0056b3 100%);
+    box-shadow: 0 4px 15px rgba(0,64,128,0.4);
+    animation: none;
+    cursor: default;
+    border-color: rgba(255,255,255,0.4);
+  }
+  .pwa-install-btn.installed:hover { transform: none; }
+
+  /* ── Update toast ── */
+  .update-toast { display: none; position: fixed; bottom: 24px; right: 24px; background: var(--navy); color: var(--white); border-left: 4px solid var(--gold); padding: 14px 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 9999; font-size: 13px; font-weight: 500; align-items: center; gap: 14px; max-width: 320px; }
+  .update-toast.visible { display: flex; animation: toastIn 0.3s ease; }
+  @keyframes toastIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .toast-btn { background: var(--gold); color: var(--navy-dark); border: none; padding: 6px 14px; border-radius: 14px; font-size: 11px; font-weight: 700; font-family: 'Oswald',sans-serif; cursor: pointer; white-space: nowrap; text-transform: uppercase; }
 </style>
 </head>
 <body>
+
+<!-- Update toast (shown when a new SW version is waiting) -->
+<div class="update-toast" id="updateToast">
+  <span>A new version is available</span>
+  <button class="toast-btn" onclick="applyUpdate()">Update Now</button>
+</div>
 
 <!-- HEADER -->
 <header class="header">
   <div class="header-left">
     <div class="logo-box">
-      <img src="https://github.com/mohamedsillahkanu/gdp-dashboard-2/raw/6c7463b0d5c3be150aafae695a4bcbbd8aeb1499/ICF-SL.jpg" alt="ICF-SL Logo">
+      <img src="ICF-SL.png" alt="ICF-SL Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="logo-placeholder" style="display:none;">ICF-SL</div>
+    </div>
+    <div class="logo-box">
+      <img src="NMCP.png" alt="NMCP Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="logo-placeholder" style="display:none;">NMCP</div>
+    </div>
+    <div class="logo-box">
+      <img src="PMI-Evolve.png" alt="PMI Evolve Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="logo-placeholder" style="display:none;">PMI Evolve</div>
     </div>
     <div class="header-divider"></div>
     <div class="header-title">
-      Informatics Consultancy Firm — Sierra Leone
-      <span>Data-Driven Solutions for Health and Development</span>
+      School Based Distribution of ITNs (SBD) Campaign 2026
+      <span>Informatics Consultancy Firm — Sierra Leone</span>
     </div>
   </div>
-  <div class="header-right">
-    National Malaria Control Programme<br>
-    Ministry of Health · Sierra Leone
+  <div style="display:flex;align-items:center;gap:20px;">
+    <button class="pwa-install-btn" id="pwaInstallBtn" onclick="installPWA()">INSTALL APP</button>
   </div>
 </header>
 
 <!-- HERO -->
 <div class="hero-band">
-  <div class="hero-tag">Tool Suite</div>
+  <div class="hero-tag">SBD Campaign 2026</div>
   <h1>My <em>Tools</em></h1>
-  <p>All tools and data files live in the same folder as this launcher. Click any card to open a tool full-screen — HTML files, CSVs, and all assets load normally.</p>
+  <p>School Based Distribution of ITNs — Sierra Leone. All tools and data files live in the same folder as this launcher. Click any card to open a tool full-screen.</p>
 </div>
 
 <!-- GRID -->
@@ -151,8 +285,8 @@
 
 <!-- FOOTER -->
 <footer class="page-footer">
-  <strong>National Malaria Control Programme</strong> · Ministry of Health and Sanitation, Sierra Leone<br>
-  Medical Stores Compound, Freetown · © 2025 Informatics Consultancy Firm-Sierra Leone (ICF-SL)
+  <strong>School Based Distribution of ITNs (SBD) Campaign 2026</strong><br>
+  © 2026 Informatics Consultancy Firm-Sierra Leone (ICF-SL)
 </footer>
 
 <!-- MODAL -->
@@ -201,6 +335,29 @@
         </div>
       </div>
       <iframe class="modal-iframe" id="modalIframe"></iframe>
+
+      <!-- Video player for .mp4 illustration files -->
+      <div class="video-wrap" id="videoWrap">
+        <video id="videoPlayer" preload="metadata"></video>
+        <div class="video-controls">
+          <button class="vc-play" id="vcPlay" onclick="togglePlay()">
+            <svg id="playIcon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <div class="vc-progress-wrap">
+            <input type="range" class="vc-seek" id="vcSeek" value="0" min="0" step="0.1">
+            <div class="vc-time" id="vcTime">0:00 / 0:00</div>
+          </div>
+          <div class="vc-right">
+            <input type="range" class="vc-vol" id="vcVol" value="1" min="0" max="1" step="0.05">
+            <button class="vc-fullscreen" onclick="toggleFullscreen()" title="Fullscreen">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -223,11 +380,11 @@
 const toolData = [
   {
     id:   1,
-    name: "DMS-PHU ITN Tracker",
+    name: "Tool Name One",
     desc: "Brief description of this tool and its role in the workflow.",
-    concept:      "dms_phu_concept.html",   // e.g. "tool1-concept.html"
-    illustration: "dms_phu.mp4",   // e.g. "tool1-illustration.html"
-    tool:         "dms_phu.html"    // e.g. "tool1.html"
+    concept:      "",   // e.g. "tool1-concept.html"
+    illustration: "",   // e.g. "tool1-illustration.html"
+    tool:         ""    // e.g. "tool1.html"
   },
   {
     id:   2,
@@ -321,9 +478,15 @@ function openTool(idx) {
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
   document.body.style.overflow = '';
+  // reset iframe
   const f = document.getElementById('modalIframe');
   f.src = 'about:blank';
   f.style.display = 'none';
+  // stop and reset video
+  const vid = document.getElementById('videoPlayer');
+  vid.pause();
+  vid.src = '';
+  document.getElementById('videoWrap').classList.remove('visible');
   activeIdx = null;
 }
 
@@ -347,12 +510,18 @@ function loadTab(tab) {
   const loading     = document.getElementById('stateLoading');
   const placeholder = document.getElementById('statePlaceholder');
   const newTabBtn   = document.getElementById('btnNewTab');
+  const videoWrap   = document.getElementById('videoWrap');
+  const videoPlayer = document.getElementById('videoPlayer');
 
+  // Reset all panels
   iframe.style.display = 'none';
+  iframe.src = 'about:blank';
+  videoWrap.classList.remove('visible');
+  videoPlayer.pause();
+  videoPlayer.src = '';
   loading.classList.remove('visible');
   placeholder.classList.remove('visible');
   newTabBtn.style.display = 'none';
-  iframe.src = 'about:blank';
 
   const m = tabMeta[tab];
   document.getElementById('placeholderIcon').textContent  = m.icon;
@@ -362,18 +531,24 @@ function loadTab(tab) {
   const filename = toolData[activeIdx][tab];
   if (!has(filename)) { placeholder.classList.add('visible'); return; }
 
-  // Show "Open in New Tab" button
   newTabBtn.style.display = 'flex';
-  newTabBtn.dataset.href   = filename;
 
+  // ── MP4 → native video player ──────────────────────────
+  if (/\.mp4$/i.test(filename.trim())) {
+    videoPlayer.src = filename;
+    videoPlayer.load();
+    videoWrap.classList.add('visible');
+    resetPlayerUI();
+    return;
+  }
+
+  // ── HTML → iframe ──────────────────────────────────────
   loading.classList.add('visible');
-
   iframe.onload = () => {
     if (iframe.src.endsWith('about:blank')) return;
     loading.classList.remove('visible');
     iframe.style.display = 'block';
   };
-
   iframe.onerror = () => {
     loading.classList.remove('visible');
     document.getElementById('placeholderTitle').textContent = 'File Not Found';
@@ -381,14 +556,152 @@ function loadTab(tab) {
       `Could not load <code>${filename}</code>. Make sure it is in the same folder as this launcher.`;
     placeholder.classList.add('visible');
   };
-
-  // Load by filename — file must be in the same folder
   iframe.src = filename;
 }
 
 function openNewTab() {
   const filename = toolData[activeIdx][activeTab];
   if (has(filename)) window.open(filename, '_blank');
+}
+
+// ====================================================================
+//  VIDEO PLAYER CONTROLS
+// ====================================================================
+const vid   = () => document.getElementById('videoPlayer');
+const seek  = () => document.getElementById('vcSeek');
+const vtime = () => document.getElementById('vcTime');
+const playI = () => document.getElementById('playIcon');
+
+const PLAY_ICON  = `<polygon points="5,3 19,12 5,21"/>`;
+const PAUSE_ICON = `<rect x="6" y="3" width="4" height="18"/><rect x="14" y="3" width="4" height="18"/>`;
+
+function resetPlayerUI() {
+  seek().value = 0;
+  vtime().textContent = '0:00 / 0:00';
+  playI().innerHTML = PLAY_ICON;
+  document.getElementById('vcVol').value = 1;
+}
+
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = Math.floor(s % 60).toString().padStart(2, '0');
+  return `${m}:${ss}`;
+}
+
+function togglePlay() {
+  const v = vid();
+  if (v.paused) { v.play(); playI().innerHTML = PAUSE_ICON; }
+  else          { v.pause(); playI().innerHTML = PLAY_ICON; }
+}
+
+function toggleFullscreen() {
+  const wrap = document.getElementById('videoWrap');
+  if (!document.fullscreenElement) wrap.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// Wire up video events once DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  const v  = document.getElementById('videoPlayer');
+  const s  = document.getElementById('vcSeek');
+  const vv = document.getElementById('vcVol');
+
+  v.addEventListener('timeupdate', () => {
+    if (!v.duration) return;
+    s.value = (v.currentTime / v.duration) * 100;
+    vtime().textContent = `${fmt(v.currentTime)} / ${fmt(v.duration)}`;
+  });
+
+  v.addEventListener('loadedmetadata', () => {
+    s.max = 100;
+    vtime().textContent = `0:00 / ${fmt(v.duration)}`;
+  });
+
+  v.addEventListener('ended', () => { playI().innerHTML = PLAY_ICON; });
+
+  s.addEventListener('input', () => {
+    if (v.duration) v.currentTime = (s.value / 100) * v.duration;
+  });
+
+  vv.addEventListener('input', () => { v.volume = vv.value; });
+});
+
+// ====================================================================
+//  PWA — Service Worker + Install Button
+// ====================================================================
+let newWorker = null;
+let deferredInstallPrompt = null;
+
+const pwaBtn = document.getElementById('pwaInstallBtn');
+
+// If already running as installed standalone app → show INSTALLED state
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  setInstalled();
+}
+
+// Capture the install prompt when browser fires it
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Button is already visible — nothing else needed
+});
+
+function installPWA() {
+  if (!deferredInstallPrompt) {
+    // No prompt available — already installed or browser doesn't support
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(choice => {
+    console.log('[App] Install choice:', choice.outcome);
+    if (choice.outcome === 'accepted') {
+      setInstalled();
+    }
+    deferredInstallPrompt = null;
+  });
+}
+
+function setInstalled() {
+  pwaBtn.textContent = 'INSTALLED';
+  pwaBtn.classList.add('installed');
+  pwaBtn.onclick = null;
+}
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log('[App] Service Worker registered');
+
+        // New SW found waiting → show update toast
+        reg.addEventListener('updatefound', () => {
+          newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              document.getElementById('updateToast').classList.add('visible');
+            }
+          });
+        });
+
+        // SW already waiting on load (e.g. background update)
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          newWorker = reg.waiting;
+          document.getElementById('updateToast').classList.add('visible');
+        }
+      })
+      .catch(err => console.error('[App] SW registration failed:', err));
+
+    // Reload once new SW takes control
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  });
+}
+
+function applyUpdate() {
+  if (newWorker) newWorker.postMessage({ type: 'SKIP_WAITING' });
+  document.getElementById('updateToast').classList.remove('visible');
 }
 </script>
 </body>
